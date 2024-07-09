@@ -2,4 +2,9 @@
     <dimen name="strong_text_size">22sp</dimen>
     <dimen name="light_text_size">16sp</dimen>
     <dimen name="default_margin">16dp</dimen>
+    <dimen name="corner_radius_16dp">16dp</dimen>
+    <dimen name="button_margin_8dp">8dp</dimen>
+    <dimen name="icon_size_24dp">24dp</dimen>
+    <dimen name="header_height_56dp">56dp</dimen>
+    <dimen name="icon_padding_1dp">1dp</dimen>
 </resources>

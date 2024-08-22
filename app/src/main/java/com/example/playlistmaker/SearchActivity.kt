@@ -1,7 +1,6 @@
 package com.example.playlistmaker
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,7 +14,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
 class SearchActivity : AppCompatActivity() {
-    var editTextValue: String = TEXT_DEF
+    var editTextValue: String = TEXT_DEFAULT
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -43,7 +42,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                clearButton.visibility = clearButtonVisibility(s)
+                clearButton.visibility = clearButtonVisibility(s.toString())
                 editTextValue = s.toString()
             }
 
@@ -54,7 +53,7 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
     }
 
-    private fun clearButtonVisibility(s: CharSequence?): Int {
+    private fun clearButtonVisibility(s: String?): Int {
         return if (s.isNullOrEmpty()) {
             View.GONE
         } else {
@@ -69,13 +68,13 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        editTextValue = savedInstanceState.getString(TEXT_AMOUNT, TEXT_DEF)
+        editTextValue = savedInstanceState.getString(TEXT_AMOUNT, TEXT_DEFAULT)
         val inputEditText = findViewById<EditText>(R.id.inputEditText)
         inputEditText.setText(editTextValue)
     }
 
     companion object {
         const val TEXT_AMOUNT = "TEXT_AMOUNT"
-        const val TEXT_DEF = ""
+        const val TEXT_DEFAULT = ""
     }
 }

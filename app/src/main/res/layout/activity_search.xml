@@ -45,7 +45,8 @@
             android:textColor="@color/black"
             android:textColorHint="@color/edittext_icon_color"
             android:textCursorDrawable="@null"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageView
             android:layout_width="17dp"
@@ -64,4 +65,12 @@
             android:visibility="gone" />
 
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="@dimen/corner_radius_16dp"
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/track_view"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </LinearLayout>

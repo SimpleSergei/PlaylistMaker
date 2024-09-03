@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class SearchActivity : AppCompatActivity() {
-    var editTextValue: String = TEXT_DEFAULT
+    private var editTextValue: String = TEXT_DEFAULT
     private val tracks: List<Track> = listOf(
         Track(
             "Smells Like Teen Spirit",

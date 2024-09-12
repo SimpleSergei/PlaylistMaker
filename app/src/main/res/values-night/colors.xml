@@ -11,4 +11,6 @@
     <color name="back_icon_color">#FFFFFFFF</color>
     <color name="edit_text_color">#FFFFFFFF</color>
     <color name="edittext_icon_color">#1A1B22</color>
+    <color name="refresh_button_text">#1A1B22</color>
+    <color name="refresh_button_background">#FFFFFFFF</color>
 </resources>

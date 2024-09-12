@@ -51,14 +51,29 @@
         <item name="android:paddingStart">38dp</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
     <style name="SongName">
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">@dimen/light_text_size</item>
         <item name="android:textColor">@color/black</item>
     </style>
+
     <style name="ArtistName">
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="android:textSize">@dimen/small_text_size</item>
         <item name="android:textColor">@color/text_gray</item>
+    </style>
+
+    <style name="SearchErrorText">
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">@dimen/error_text_size</item>
+        <item name="android:textColor">@color/back_icon_color</item>
+    </style>
+
+    <style name="RefreshButon">
+        <item name="fontFamily">@font/ys_display_medium</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/refresh_button_text</item>
+        <item name="android:backgroundTint">@color/refresh_button_background</item>
     </style>
 </resources>

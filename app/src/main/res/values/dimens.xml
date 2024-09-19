@@ -13,4 +13,5 @@
     <dimen name="track_time_separator_5dp">5dp</dimen>
     <dimen name="track_margin_66dp">66dp</dimen>
     <dimen name="error_text_size">19sp</dimen>
+    <dimen name="small_button_corner_radius">15dp</dimen>
 </resources>

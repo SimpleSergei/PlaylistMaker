@@ -9,6 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,10 +21,23 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val backButton = findViewById<ImageView>(R.id.back)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+        val backButton = findViewById<ImageView>(R.id.backBtn)
         val shareButton = findViewById<TextView>(R.id.share_app)
         val supportButton = findViewById<TextView>(R.id.support)
         val offerButton = findViewById<TextView>(R.id.license)
+        val sharedPref = getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, MODE_PRIVATE)
+
+        if ((applicationContext as App).darkTheme) {
+            themeSwitcher.isChecked = true
+        }
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+            sharedPref.edit()
+                .putBoolean(DARK_THEME_KEY, checked)
+                .apply()
+        }
 
         backButton.setOnClickListener {
             finish()

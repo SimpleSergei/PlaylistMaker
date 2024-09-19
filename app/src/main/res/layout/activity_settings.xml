@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".SettingsActivity">
+    tools:context=".SettingsActivity"
+    tools:viewBindingIgnore="true">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -15,7 +16,7 @@
         android:layout_marginBottom="35dp">
 
         <ImageView
-            android:id="@+id/back"
+            android:id="@+id/backBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -28,10 +29,13 @@
             tools:ignore="RtlSymmetry" />
     </FrameLayout>
 
-    <FrameLayout style="@style/SettingsMenuLayout">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/default_margin">
 
-        <Switch
-            android:id="@+id/dark_theme"
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/themeSwitcher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fontFamily="@font/ys_display_medium"

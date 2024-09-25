@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -55,13 +57,21 @@ class SearchActivity : AppCompatActivity() {
             searchHistoryAdapter = TrackAdapter((searchHistory.getSearchHistory()!!).reversed())
             binding.recyclerViewHistory.adapter = searchHistoryAdapter
             showSearchHistory((searchHistory.getSearchHistory()!!).reversed())
+            searchHistoryAdapter.onTrackClickListener = { trackForecast ->
+                val playerIntent = Intent(this, PlayerActivity::class.java)
+                playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
+                startActivity(playerIntent)
+            }
         }
 
         tracksAdapter = TrackAdapter(tracks)
         binding.recyclerView.adapter = tracksAdapter
 
         tracksAdapter.onTrackClickListener = { trackForecast ->
+            val playerIntent = Intent(this, PlayerActivity::class.java)
             searchHistory.addTrackToHistory(trackForecast)
+            playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
+            startActivity(playerIntent)
         }
 
         binding.backBtn.setOnClickListener {
@@ -77,7 +87,16 @@ class SearchActivity : AppCompatActivity() {
             binding.inputEditText.setText("")
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
-            if (searchHistory.getSearchHistory() != null) showSearchHistory(searchHistory.getSearchHistory()!!.reversed())
+            with(binding) {
+                errorMessage.visibility = View.GONE
+                nothingFoundImg.visibility = View.GONE
+                somethingWentWrongImg.visibility = View.GONE
+                refreshBtn.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+            }
+            if (searchHistory.getSearchHistory() != null) showSearchHistory(
+                searchHistory.getSearchHistory()!!.reversed()
+            )
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
@@ -134,6 +153,7 @@ class SearchActivity : AppCompatActivity() {
                     if (response.body()?.results?.isNotEmpty() == true) {
                         tracks.addAll(response.body()?.results!!)
                         tracksAdapter.notifyDataSetChanged()
+                        binding.recyclerView.visibility = View.VISIBLE
                     }
                     if (tracks.isEmpty()) {
                         showErrorMessage(getString(R.string.nothing_found), 1)

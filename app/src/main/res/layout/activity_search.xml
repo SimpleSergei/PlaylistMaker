@@ -77,7 +77,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/corner_radius_16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/track_view" />
+            tools:listitem="@layout/track_view"/>
 
         <ImageView
             android:id="@+id/nothingFoundImg"

@@ -121,7 +121,6 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (binding.inputEditText.text.isNotEmpty()) {
                     userRequest = binding.inputEditText.text.toString()
-                    binding.recyclerView.visibility = View.VISIBLE
                     search(userRequest)
                 }
             }
@@ -136,8 +135,19 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearBtn.visibility = clearButtonVisibility(s.toString())
                 editTextValue = s.toString()
+                if (binding.inputEditText.hasFocus() && s?.isEmpty() == true) {
+                    with(binding) {
+                        recyclerView.visibility = View.GONE
+                        errorMessage.visibility = View.GONE
+                        nothingFoundImg.visibility = View.GONE
+                        somethingWentWrongImg.visibility = View.GONE
+                        refreshBtn.visibility = View.GONE
+                        recyclerView.visibility = View.GONE
+                    }
+                }
                 if (binding.inputEditText.hasFocus() && s?.isEmpty() == true && searchHistory.getSearchHistory() != null) {
-                    binding.recyclerView.visibility = View.GONE
+                    tracksHistory.clear()
+                    tracksHistory.addAll(searchHistory.getSearchHistory()!!.reversed())
                     showSearchHistory()
                 } else hideSearchHistory()
             }

@@ -1,6 +1,7 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -28,8 +30,9 @@ class SearchActivity : AppCompatActivity() {
     private var editTextValue: String = TEXT_DEFAULT
     private var userRequest: String = ""
     private val tracks = ArrayList<Track>()
+    private val tracksHistory = ArrayList<Track>()
     lateinit var tracksAdapter: TrackAdapter
-    lateinit var searchHistoryAdapter: TrackAdapter
+    private lateinit var searchHistoryAdapter: TrackAdapter
 
     private val iTunesBaseUrl = "https://itunes.apple.com"
     private val retrofit = Retrofit.Builder()
@@ -50,18 +53,29 @@ class SearchActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        searchHistoryAdapter = TrackAdapter(tracksHistory)
+        binding.recyclerViewHistory.adapter = searchHistoryAdapter
 
         if (searchHistory.getSearchHistory() != null) {
-            searchHistoryAdapter = TrackAdapter((searchHistory.getSearchHistory()!!).reversed())
-            binding.recyclerViewHistory.adapter = searchHistoryAdapter
-            showSearchHistory((searchHistory.getSearchHistory()!!).reversed())
+            tracksHistory.addAll(searchHistory.getSearchHistory()!!.reversed())
+            showSearchHistory()
         }
+
+        searchHistoryAdapter.onTrackClickListener = { trackForecast ->
+            val playerIntent = Intent(this, PlayerActivity::class.java)
+            playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
+            startActivity(playerIntent)
+        }
+
 
         tracksAdapter = TrackAdapter(tracks)
         binding.recyclerView.adapter = tracksAdapter
 
         tracksAdapter.onTrackClickListener = { trackForecast ->
+            val playerIntent = Intent(this, PlayerActivity::class.java)
             searchHistory.addTrackToHistory(trackForecast)
+            playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
+            startActivity(playerIntent)
         }
 
         binding.backBtn.setOnClickListener {
@@ -77,7 +91,18 @@ class SearchActivity : AppCompatActivity() {
             binding.inputEditText.setText("")
             tracks.clear()
             tracksAdapter.notifyDataSetChanged()
-            if (searchHistory.getSearchHistory() != null) showSearchHistory(searchHistory.getSearchHistory()!!.reversed())
+            with(binding) {
+                errorMessage.visibility = View.GONE
+                nothingFoundImg.visibility = View.GONE
+                somethingWentWrongImg.visibility = View.GONE
+                refreshBtn.visibility = View.GONE
+                recyclerView.visibility = View.GONE
+            }
+            if (searchHistory.getSearchHistory() != null) {
+                tracksHistory.clear()
+                tracksHistory.addAll(searchHistory.getSearchHistory()!!.reversed())
+                showSearchHistory()
+            }
             val inputMethodManager =
                 getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
@@ -87,9 +112,9 @@ class SearchActivity : AppCompatActivity() {
             search(userRequest)
         }
 
-        binding.inputEditText.setOnFocusChangeListener { view, hasFocus ->
+        binding.inputEditText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus && binding.inputEditText.text.isEmpty() && searchHistory.getSearchHistory() != null) {
-                showSearchHistory((searchHistory.getSearchHistory()!!).reversed())
+                showSearchHistory()
             } else hideSearchHistory()
         }
         binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -98,7 +123,6 @@ class SearchActivity : AppCompatActivity() {
                     userRequest = binding.inputEditText.text.toString()
                     search(userRequest)
                 }
-                true
             }
             false
         }
@@ -111,8 +135,20 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearBtn.visibility = clearButtonVisibility(s.toString())
                 editTextValue = s.toString()
+                if (binding.inputEditText.hasFocus() && s?.isEmpty() == true) {
+                    with(binding) {
+                        recyclerView.visibility = View.GONE
+                        errorMessage.visibility = View.GONE
+                        nothingFoundImg.visibility = View.GONE
+                        somethingWentWrongImg.visibility = View.GONE
+                        refreshBtn.visibility = View.GONE
+                        recyclerView.visibility = View.GONE
+                    }
+                }
                 if (binding.inputEditText.hasFocus() && s?.isEmpty() == true && searchHistory.getSearchHistory() != null) {
-                    showSearchHistory((searchHistory.getSearchHistory()!!).reversed())
+                    tracksHistory.clear()
+                    tracksHistory.addAll(searchHistory.getSearchHistory()!!.reversed())
+                    showSearchHistory()
                 } else hideSearchHistory()
             }
 
@@ -134,6 +170,7 @@ class SearchActivity : AppCompatActivity() {
                     if (response.body()?.results?.isNotEmpty() == true) {
                         tracks.addAll(response.body()?.results!!)
                         tracksAdapter.notifyDataSetChanged()
+                        binding.recyclerView.visibility = View.VISIBLE
                     }
                     if (tracks.isEmpty()) {
                         showErrorMessage(getString(R.string.nothing_found), 1)
@@ -194,10 +231,8 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setText(editTextValue)
     }
 
-    private fun showSearchHistory(tracks: List<Track>) {
+    private fun showSearchHistory() {
         with(binding) {
-            searchHistoryAdapter = TrackAdapter(tracks)
-            recyclerViewHistory.adapter = searchHistoryAdapter
             searchHistoryAdapter.notifyDataSetChanged()
             youSearchTxt.visibility = View.VISIBLE
             recyclerViewHistory.visibility = View.VISIBLE

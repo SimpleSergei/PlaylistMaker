@@ -14,4 +14,5 @@
     <dimen name="track_margin_66dp">66dp</dimen>
     <dimen name="error_text_size">19sp</dimen>
     <dimen name="small_button_corner_radius">15dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
 </resources>

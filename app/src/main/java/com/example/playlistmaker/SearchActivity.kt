@@ -3,6 +3,8 @@ package com.example.playlistmaker
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -27,10 +29,13 @@ class SearchActivity : AppCompatActivity() {
         get() = _binding
             ?: throw IllegalStateException("Binding for search activity must not be null")
 
+    private var isClickAllowed = true
     private var editTextValue: String = TEXT_DEFAULT
     private var userRequest: String = ""
     private val tracks = ArrayList<Track>()
     private val tracksHistory = ArrayList<Track>()
+    private val searchRunnable = Runnable { search(userRequest) }
+    private val handler = Handler(Looper.getMainLooper())
     lateinit var tracksAdapter: TrackAdapter
     private lateinit var searchHistoryAdapter: TrackAdapter
 
@@ -62,20 +67,23 @@ class SearchActivity : AppCompatActivity() {
         }
 
         searchHistoryAdapter.onTrackClickListener = { trackForecast ->
-            val playerIntent = Intent(this, PlayerActivity::class.java)
-            playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
-            startActivity(playerIntent)
+            if (clickDebounce()) {
+                val playerIntent = Intent(this, PlayerActivity::class.java)
+                playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
+                startActivity(playerIntent)
+            }
         }
-
 
         tracksAdapter = TrackAdapter(tracks)
         binding.recyclerView.adapter = tracksAdapter
 
         tracksAdapter.onTrackClickListener = { trackForecast ->
-            val playerIntent = Intent(this, PlayerActivity::class.java)
-            searchHistory.addTrackToHistory(trackForecast)
-            playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
-            startActivity(playerIntent)
+            if (clickDebounce()) {
+                val playerIntent = Intent(this, PlayerActivity::class.java)
+                searchHistory.addTrackToHistory(trackForecast)
+                playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
+                startActivity(playerIntent)
+            }
         }
 
         binding.backBtn.setOnClickListener {
@@ -135,6 +143,8 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.clearBtn.visibility = clearButtonVisibility(s.toString())
                 editTextValue = s.toString()
+                userRequest = s.toString()
+                if (s?.isNotEmpty() == true) searchDebounce()
                 if (binding.inputEditText.hasFocus() && s?.isEmpty() == true) {
                     with(binding) {
                         recyclerView.visibility = View.GONE
@@ -160,11 +170,16 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun search(request: String) {
+        binding.recyclerView.visibility = View.GONE
+        hideSearchHistory()
+        binding.progressBar.visibility = View.VISIBLE
+
         iTunesService.findSong(request).enqueue(object : Callback<TracksResponse> {
             override fun onResponse(
                 call: Call<TracksResponse>,
                 response: Response<TracksResponse>
             ) {
+                binding.progressBar.visibility = View.GONE
                 if (response.code() == 200) {
                     tracks.clear()
                     if (response.body()?.results?.isNotEmpty() == true) {
@@ -183,6 +198,7 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<TracksResponse>, t: Throwable) {
+                binding.progressBar.visibility = View.GONE
                 showErrorMessage(getString(R.string.something_went_wrong), 2)
             }
         })
@@ -248,8 +264,25 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+
     companion object {
-        const val TEXT_AMOUNT = "TEXT_AMOUNT"
-        const val TEXT_DEFAULT = ""
+        private const val TEXT_AMOUNT = "TEXT_AMOUNT"
+        private const val TEXT_DEFAULT = ""
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+        private const val CLICK_DEBOUNCE_DELAY = 1000L
     }
 }

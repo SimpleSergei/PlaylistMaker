@@ -175,18 +175,26 @@ class SearchActivity : AppCompatActivity() {
             expression = request,
             consumer = object : TracksInteractor.TracksConsumer {
                 override fun consume(foundTracks: List<Track>) {
-                    val newSearchRunnable = Runnable {
+//                    val newSearchRunnable = Runnable {
+//                        tracks.clear()
+//                        tracks.addAll(foundTracks)
+//                        tracksAdapter.notifyDataSetChanged()
+//                        binding.progressBar.visibility = View.GONE
+//                        binding.recyclerView.visibility = View.VISIBLE
+//                    }
+//                    handler.post(newSearchRunnable)
+                    handler.post {
+                        binding.progressBar.visibility = View.GONE
                         tracks.clear()
                         tracks.addAll(foundTracks)
                         tracksAdapter.notifyDataSetChanged()
-                        binding.progressBar.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
+                        if (tracks.isEmpty()) showErrorMessage(getString(R.string.nothing_found), 1)
+                        else binding.recyclerView.visibility =View.VISIBLE
+
                     }
-                    handler.post(newSearchRunnable)
                 }
             }
         )
-        if (tracks.isEmpty()) showErrorMessage(getString(R.string.nothing_found), 1)
     }
 
     private fun showErrorMessage(text: String, type: Int) {

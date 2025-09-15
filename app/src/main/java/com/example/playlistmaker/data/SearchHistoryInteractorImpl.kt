@@ -18,8 +18,8 @@ class SearchHistoryInteractorImpl(private val sharedPreferences: SharedPreferenc
     }
 
     override fun addTrackToHistory(track: Track) {
-        if (tracksSearchHistory.size == 10) tracksSearchHistory.removeAt(0)
-        for (i in 0..tracksSearchHistory.size - 1) if (tracksSearchHistory[i].trackId == track.trackId) {
+        if (tracksSearchHistory.size == MAX_COUNT_TRACKS) tracksSearchHistory.removeAt(0)
+        for (i in 0..tracksSearchHistory.lastIndex) if (tracksSearchHistory[i].trackId == track.trackId) {
             tracksSearchHistory.removeAt(i)
             break
         }
@@ -43,5 +43,8 @@ class SearchHistoryInteractorImpl(private val sharedPreferences: SharedPreferenc
         } else {
             Gson().fromJson(json, type)
         }
+    }
+    companion object{
+        private const val MAX_COUNT_TRACKS = 10
     }
 }

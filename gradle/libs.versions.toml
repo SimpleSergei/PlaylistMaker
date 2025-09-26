@@ -15,8 +15,10 @@ constraintlayout = "2.1.4"
 retrofit = "2.9.0"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
+lifecycleVersion = "1.16.0"
 
 [libraries]
+androidx-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }

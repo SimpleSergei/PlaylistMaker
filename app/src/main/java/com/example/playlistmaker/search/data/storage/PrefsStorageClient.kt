@@ -7,6 +7,8 @@ import com.google.gson.Gson
 import java.lang.reflect.Type
 import androidx.core.content.edit
 
+const val SEARCH_HISTORY_KEY = "SEARCH_HISTORY"
+
 class PrefsStorageClient<T>(
     context: Context, private val dataKey: String, private val type: Type
 ) : StorageClient<T> {
@@ -15,7 +17,7 @@ class PrefsStorageClient<T>(
     }
 
     private val prefs: SharedPreferences =
-        context.getSharedPreferences("SEARCH_HISTORY", Context.MODE_PRIVATE)
+        context.getSharedPreferences(SEARCH_HISTORY_KEY, Context.MODE_PRIVATE)
     private val gson = Gson()
     override fun storageData(data: T) {
         require(data is ArrayList<*>) { "Data must be ArrayList" }
@@ -35,7 +37,7 @@ class PrefsStorageClient<T>(
 
     override fun deleteData() {
         prefs.edit {
-            remove("SEARCH_HISTORY")
+            remove(SEARCH_HISTORY_KEY)
         }
     }
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.playlistmaker.R
 import com.example.playlistmaker.sharing.data.EmailData
 
-class SharingInteractorImpl(private val externalNavigator: ExternalNavigator, private val context: Context) : SharingInteractor {
+class SharingInteractorImpl(private val externalNavigator: ExternalNavigator,private val context: Context) : SharingInteractor {
     override fun shareApp() {
         externalNavigator.shareApp(getShareAppLink())
     }

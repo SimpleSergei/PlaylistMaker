@@ -9,39 +9,34 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.playlistmaker.player.domain.PlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerViewModel(private val url: String) : ViewModel() {
 
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
         private const val REFRESH_TIMER_DELAY = 333L
+
         fun getFactory(trackUrl: String): ViewModelProvider.Factory =
             viewModelFactory { initializer { PlayerViewModel(trackUrl) } }
     }
 
-    private val playerStateLiveData = MutableLiveData(STATE_DEFAULT)
-    private val progressTimeLiveData = MutableLiveData("00:00")
+    private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default)
+    val playerState: LiveData<PlayerState> = _playerState
+
     private val mediaPlayer = MediaPlayer()
     private val handler = Handler(Looper.getMainLooper())
     private val timerRunnable = Runnable {
-        if (playerStateLiveData.value == STATE_PLAYING) {
-            startTimerUpdate()
+        when (_playerState.value) {
+            is PlayerState.Playing -> updateProgressTime()
+            else -> {}
         }
     }
 
     init {
         preparePlayer()
     }
-
-    fun observePlayerState(): LiveData<Int> = playerStateLiveData
-
-    fun observeProgressTime(): LiveData<String> = progressTimeLiveData
-
 
     override fun onCleared() {
         super.onCleared()
@@ -50,40 +45,59 @@ class PlayerViewModel(private val url: String) : ViewModel() {
     }
 
     fun onPlayButtonClicked() {
-        when (playerStateLiveData.value) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+        when (val currentState = _playerState.value) {
+            is PlayerState.Playing -> pausePlayer(currentState.progressTime)
+            is PlayerState.Prepared -> startPlayer()
+            is PlayerState.Paused -> startPlayer()
+            PlayerState.Default -> {}
         }
     }
 
     fun onPause() {
-        pausePlayer()
+        when (val currentState = _playerState.value) {
+            is PlayerState.Playing -> pausePlayer(currentState.progressTime)
+            else -> {}
+        }
     }
 
     private fun preparePlayer() {
         mediaPlayer.setDataSource(url)
         mediaPlayer.prepareAsync()
-        mediaPlayer.setOnPreparedListener { playerStateLiveData.postValue(STATE_PREPARED) }
+        mediaPlayer.setOnPreparedListener {
+            _playerState.postValue(PlayerState.Prepared)
+        }
         mediaPlayer.setOnCompletionListener {
-            playerStateLiveData.postValue(STATE_PREPARED)
+            _playerState.postValue(PlayerState.Prepared)
             resetTimer()
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
-        playerStateLiveData.postValue(STATE_PLAYING)
+        val currentTime = when (val currentState = _playerState.value) {
+            is PlayerState.Paused -> currentState.progressTime
+            is PlayerState.Playing -> currentState.progressTime
+            else -> "00:00"
+        }
+        _playerState.postValue(PlayerState.Playing(currentTime))
         startTimerUpdate()
     }
 
-    private fun pausePlayer() {
+    private fun pausePlayer(progressTime: String) {
         pauseTimer()
         mediaPlayer.pause()
-        playerStateLiveData.postValue(STATE_PAUSED)
+        _playerState.postValue(PlayerState.Paused(progressTime))
     }
 
     private fun startTimerUpdate() {
-        progressTimeLiveData.postValue(SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition))
+        updateProgressTime()
+        handler.postDelayed(timerRunnable, REFRESH_TIMER_DELAY)
+    }
+
+    private fun updateProgressTime() {
+        val newTime =
+            SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+        _playerState.postValue(PlayerState.Playing(newTime))
         handler.postDelayed(timerRunnable, REFRESH_TIMER_DELAY)
     }
 
@@ -93,7 +107,6 @@ class PlayerViewModel(private val url: String) : ViewModel() {
 
     private fun resetTimer() {
         handler.removeCallbacks(timerRunnable)
-        progressTimeLiveData.postValue("00:00")
+        _playerState.postValue(PlayerState.Prepared)
     }
-
 }

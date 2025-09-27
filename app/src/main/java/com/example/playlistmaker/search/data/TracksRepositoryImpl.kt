@@ -21,10 +21,10 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                         it.trackTimeMillis,
                         it.artworkUrl100,
                         it.collectionName,
-                        it.releaseDate,
+                        it.releaseDate ?: "Unknown",
                         it.primaryGenreName,
                         it.country,
-                        it.previewUrl)
+                        it.previewUrl?: "Unknown")
                 })
             }
             else -> {

@@ -29,11 +29,11 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val sharingInteractor = Creator.provideSharingInteractor(this)
-        val settingsRepository = Creator.provideSettingsRepository(this)
+        val sharingInteractor = Creator.provideSharingInteractor()
+        val settingsInteractor = Creator.provideSettingsInteractor()
         viewModel = ViewModelProvider(
             this,
-            SettingsViewModel.getFactory(sharingInteractor, settingsRepository)
+            SettingsViewModel.getFactory(sharingInteractor, settingsInteractor)
         ).get(
             SettingsViewModel::class.java
         )

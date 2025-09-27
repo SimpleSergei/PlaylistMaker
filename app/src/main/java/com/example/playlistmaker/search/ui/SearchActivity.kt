@@ -4,22 +4,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.widget.doOnTextChanged
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.data.Track
-import com.example.playlistmaker.search.domain.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.TracksSearchState
 import com.google.gson.Gson
 
@@ -38,8 +35,7 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     lateinit var tracksAdapter: TrackAdapter
     private lateinit var searchHistoryAdapter: TrackAdapter
-    private var viewModel: TracksSearchViewModel? = null
-    private var simpleTextWatcher: TextWatcher? = null
+    private val viewModel: TracksSearchViewModel by viewModels { TracksSearchViewModel.getFactory() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         _binding = ActivitySearchBinding.inflate(layoutInflater)
@@ -51,24 +47,13 @@ class SearchActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        viewModel = ViewModelProvider(this, TracksSearchViewModel.getFactory()).get(
-            TracksSearchViewModel::class.java
-        )
-        viewModel?.observeState()?.observe(this) {
+
+        viewModel.observeState().observe(this) {
             render(it)
         }
-        val searchHistoryInteractor = Creator.provideSearchHistoryInteractor(this)
+
         searchHistoryAdapter = TrackAdapter(tracksHistory)
         binding.recyclerViewHistory.adapter = searchHistoryAdapter
-
-        searchHistoryInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
-            override fun consume(searchHistory: List<Track>?) {
-                if (searchHistory != null && searchHistory.isNotEmpty()) {
-                    tracksHistory.addAll(searchHistory.reversed())
-                    showSearchHistory()
-                }
-            }
-        })
 
         searchHistoryAdapter.onTrackClickListener = { trackForecast ->
             if (clickDebounce()) {
@@ -84,7 +69,7 @@ class SearchActivity : AppCompatActivity() {
         tracksAdapter.onTrackClickListener = { trackForecast ->
             if (clickDebounce()) {
                 val playerIntent = Intent(this, PlayerActivity::class.java)
-                searchHistoryInteractor.saveToHistory(trackForecast)
+                viewModel.saveToHistory(trackForecast)
                 playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
                 startActivity(playerIntent)
             }
@@ -95,7 +80,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.clearHistoryBtn.setOnClickListener {
-            searchHistoryInteractor.clearHistory()
+            viewModel.clearSearchHistory()
             with(binding) {
                 youSearchTxt.visibility = View.GONE
                 recyclerViewHistory.visibility = View.GONE
@@ -115,39 +100,28 @@ class SearchActivity : AppCompatActivity() {
                 refreshBtn.visibility = View.GONE
                 recyclerView.visibility = View.GONE
             }
-            searchHistoryInteractor.getHistory(object :
-                SearchHistoryInteractor.HistoryConsumer {
-                override fun consume(searchHistory: List<Track>?) {
-                    if (searchHistory != null && searchHistory.isNotEmpty()) {
-                        tracksHistory.clear()
-                        tracksHistory.addAll(searchHistory.reversed())
-                        showSearchHistory()
-                    }
-                }
-            })
+            viewModel.loadSearchHistory()
             val inputMethodManager =
                 getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
         }
 
         binding.refreshBtn.setOnClickListener {
-            viewModel?.searchDebounce(userRequest)
+            viewModel.searchDebounce(userRequest, true)
+            binding.errorMessage.visibility = View.GONE
+            binding.somethingWentWrongImg.visibility = View.GONE
+            binding.refreshBtn.visibility = View.GONE
+            binding.progressBar.visibility = View.VISIBLE
         }
 
-        simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.clearBtn.visibility = clearButtonVisibility(s.toString())
-                editTextValue = s.toString()
-                userRequest = s.toString()
-                if (s?.isNotEmpty() == true) viewModel?.searchDebounce(
-                    changedText = s?.toString() ?: ""
-                )
+        binding.inputEditText.doOnTextChanged { text, _, _, _ ->
+            binding.clearBtn.visibility = clearButtonVisibility(text?.toString())
+            editTextValue = text?.toString() ?: ""
+            userRequest = text?.toString() ?: ""
+            if (!text.isNullOrEmpty()) {
+                viewModel.searchDebounce(changedText = text.toString())
             }
         }
-        simpleTextWatcher?.let { binding.inputEditText.addTextChangedListener(it) }
-        binding.inputEditText.addTextChangedListener(simpleTextWatcher)
 
         binding.inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -183,15 +157,31 @@ class SearchActivity : AppCompatActivity() {
             is TracksSearchState.Content -> showContent(state.track)
             is TracksSearchState.Empty -> showEmpty()
             is TracksSearchState.Error -> showError()
+            is TracksSearchState.SearchHistory -> showSearchHistory(state.history)
+            is TracksSearchState.SearchHistoryCleared -> hideSearchHistory()
         }
     }
 
-    private fun showSearchHistory() {
-        with(binding) {
+    private fun showSearchHistory(history: List<Track>) {
+        tracksHistory.clear()
+        if (history.isNotEmpty()) {
+            tracksHistory.addAll(history)
             searchHistoryAdapter.notifyDataSetChanged()
-            youSearchTxt.visibility = View.VISIBLE
-            recyclerViewHistory.visibility = View.VISIBLE
-            clearHistoryBtn.visibility = View.VISIBLE
+            with(binding) {
+                youSearchTxt.visibility = View.VISIBLE
+                recyclerViewHistory.visibility = View.VISIBLE
+                clearHistoryBtn.visibility = View.VISIBLE
+            }
+        } else {
+            hideSearchHistory()
+        }
+    }
+
+    private fun hideSearchHistory() {
+        with(binding) {
+            youSearchTxt.visibility = View.GONE
+            recyclerViewHistory.visibility = View.GONE
+            clearHistoryBtn.visibility = View.GONE
         }
     }
 
@@ -228,11 +218,6 @@ class SearchActivity : AppCompatActivity() {
             clearHistoryBtn.visibility = View.GONE
         }
         binding.progressBar.visibility = View.VISIBLE
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        simpleTextWatcher?.let { binding.inputEditText.removeTextChangedListener(it) }
     }
 
     companion object {

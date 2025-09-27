@@ -1,16 +1,17 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.player.domain.PlayerState
 import com.example.playlistmaker.search.data.Track
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -41,15 +42,28 @@ class PlayerActivity : AppCompatActivity() {
         ).get(PlayerViewModel::class.java)
 
 
-        viewModel.observePlayerState().observe(this) {
-            when (it){
-                0,1,3 -> binding.playBtn.setImageResource(R.drawable.play_button)
-                2 -> binding.playBtn.setImageResource(R.drawable.pause_button)
-            }
-        }
+        viewModel.playerState.observe(this) { state ->
+            when (state) {
+                PlayerState.Default -> {
+                    binding.playBtn.setImageResource(R.drawable.play_button)
+                    binding.trackTime.text = "00:00"
+                }
 
-        viewModel.observeProgressTime().observe(this) {
-            binding.trackTime.text = it
+                PlayerState.Prepared -> {
+                    binding.playBtn.setImageResource(R.drawable.play_button)
+                    binding.trackTime.text = "00:00"
+                }
+
+                is PlayerState.Playing -> {
+                    binding.playBtn.setImageResource(R.drawable.pause_button)
+                    binding.trackTime.text = state.progressTime
+                }
+
+                is PlayerState.Paused -> {
+                    binding.playBtn.setImageResource(R.drawable.play_button)
+                    binding.trackTime.text = state.progressTime
+                }
+            }
         }
 
         binding.backBtn.setOnClickListener { finish() }
@@ -65,7 +79,7 @@ class PlayerActivity : AppCompatActivity() {
             .transform(RoundedCorners(10))
             .into(binding.coverTrack)
 
-        if (track.collectionName.isEmpty()) binding.groupAlbum.visibility = View.GONE
+        binding.groupAlbum.isVisible = !track.collectionName.isEmpty()
 
         with(binding) {
             trackName.text = track.trackName

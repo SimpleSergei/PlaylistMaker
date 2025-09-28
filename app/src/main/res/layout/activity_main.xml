@@ -5,7 +5,7 @@
     tools:viewBindingIgnore="true"
     android:id="@+id/main"
     style="@style/MainLinear"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".main.ui.MainActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

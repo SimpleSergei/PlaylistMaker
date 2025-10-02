@@ -8,7 +8,6 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -19,6 +18,7 @@ import com.example.playlistmaker.player.ui.PlayerActivity
 import com.example.playlistmaker.search.data.Track
 import com.example.playlistmaker.search.domain.TracksSearchState
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
     private var _binding: ActivitySearchBinding? = null
@@ -35,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
     private val handler = Handler(Looper.getMainLooper())
     lateinit var tracksAdapter: TrackAdapter
     private lateinit var searchHistoryAdapter: TrackAdapter
-    private val viewModel: TracksSearchViewModel by viewModels { TracksSearchViewModel.getFactory() }
+    private val viewModel: TracksSearchViewModel by viewModel<TracksSearchViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         _binding = ActivitySearchBinding.inflate(layoutInflater)
@@ -127,7 +127,7 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (binding.inputEditText.text.isNotEmpty()) {
                     userRequest = binding.inputEditText.text.toString()
-                    viewModel?.searchDebounce(changedText = userRequest)
+                    viewModel.searchDebounce(changedText = userRequest)
                 }
             }
             false

@@ -5,24 +5,24 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.sharing.data.EmailData
 
 class SharingInteractorImpl(private val externalNavigator: ExternalNavigator,private val context: Context) : SharingInteractor {
-    override fun shareApp() {
-        externalNavigator.shareApp(getShareAppLink())
+    override fun shareApp(context: Context) {
+        externalNavigator.shareApp(getShareAppLink(),context)
     }
 
     private fun getShareAppLink(): String {
         return context.getString(R.string.android_developer_url)
     }
 
-    override fun openTerms() {
-        externalNavigator.openLink(getTermsLink())
+    override fun openTerms(context: Context) {
+        externalNavigator.openLink(getTermsLink(),context)
     }
 
     private fun getTermsLink(): String {
         return context.getString(R.string.practicum_offer_url)
     }
 
-    override fun openSupport() {
-        externalNavigator.openEmail(getSupportEmailData())
+    override fun openSupport(context: Context) {
+        externalNavigator.openEmail(getSupportEmailData(),context)
     }
 
     private fun getSupportEmailData(): EmailData {

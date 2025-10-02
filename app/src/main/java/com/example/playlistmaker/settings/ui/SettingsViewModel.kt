@@ -1,26 +1,20 @@
 package com.example.playlistmaker.settings.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.settings.domain.SettingsInteractor
 import com.example.playlistmaker.sharing.domain.SharingInteractor
 
 class SettingsViewModel(private val sharingInteractor: SharingInteractor, private val settingsInteractor: SettingsInteractor) : ViewModel() {
-    companion object {
-        fun getFactory(sharingInteractor: SharingInteractor, settingsInteractor: SettingsInteractor): ViewModelProvider.Factory =
-            viewModelFactory { initializer { SettingsViewModel(sharingInteractor,settingsInteractor) } }
-    }
 
-    fun shareApp(){
-        sharingInteractor.shareApp()
+    fun shareApp(context: Context){
+        sharingInteractor.shareApp(context)
     }
-    fun openTerms(){
-        sharingInteractor.openTerms()
+    fun openTerms(context: Context){
+        sharingInteractor.openTerms(context)
             }
-    fun openSupport(){
-        sharingInteractor.openSupport()
+    fun openSupport(context: Context){
+        sharingInteractor.openSupport(context)
     }
     fun switchTheme(){
         settingsInteractor.updateThemeSettings()

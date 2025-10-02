@@ -55,4 +55,5 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.gson)
     implementation(libs.androidx.lifecycle)
+    implementation(libs.koin.android)
 }

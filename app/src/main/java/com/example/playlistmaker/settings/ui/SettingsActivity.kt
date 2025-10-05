@@ -1,5 +1,6 @@
 package com.example.playlistmaker.settings.ui
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -7,8 +8,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
+import com.example.playlistmaker.settings.domain.SettingsEvent
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.getValue
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -33,6 +34,8 @@ class SettingsActivity : AppCompatActivity() {
             binding.themeSwitcher.isChecked = true
         }
 
+        openNavigationActivities()
+
         binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             viewModel.switchTheme()
         }
@@ -42,15 +45,31 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         binding.shareApp.setOnClickListener {
-            viewModel.shareApp(this)
+            viewModel.shareApp()
         }
 
         binding.support.setOnClickListener {
-            viewModel.openSupport(this)
+            viewModel.openSupport()
         }
 
         binding.license.setOnClickListener {
-            viewModel.openTerms(this)
+            viewModel.openTerms()
+        }
+    }
+
+    private fun openNavigationActivities() {
+        viewModel.observeNavigationEvent().observe(this) { event ->
+            when (event) {
+                is SettingsEvent.ShareApp -> startActivity(Intent.createChooser(event.intent, null))
+                is SettingsEvent.OpenTerms -> startActivity(
+                    Intent.createChooser(
+                        event.intent,
+                        null
+                    )
+                )
+
+                is SettingsEvent.OpenSupport -> startActivity(event.intent)
+            }
         }
     }
 }

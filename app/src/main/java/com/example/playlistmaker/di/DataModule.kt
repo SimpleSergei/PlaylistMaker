@@ -1,0 +1,55 @@
+package com.example.playlistmaker.di
+
+import android.content.Context
+import com.example.playlistmaker.search.data.NetworkClient
+import com.example.playlistmaker.search.data.SearchHistoryRepositoryImpl
+import com.example.playlistmaker.search.data.StorageClient
+import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
+import com.example.playlistmaker.search.data.network.iTunesApi
+import com.example.playlistmaker.search.data.storage.PrefsStorageClient
+import com.example.playlistmaker.search.data.storage.SEARCH_HISTORY_KEY
+import com.example.playlistmaker.search.domain.SearchHistoryRepository
+import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
+import com.example.playlistmaker.settings.domain.SettingsRepository
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+val dataModule = module {
+
+    single<iTunesApi> {
+        Retrofit.Builder()
+            .baseUrl("https://itunes.apple.com")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(iTunesApi::class.java)
+    }
+    single<SearchHistoryRepository> {
+        SearchHistoryRepositoryImpl(get())
+    }
+
+    single<StorageClient<ArrayList<Track>>> {
+        PrefsStorageClient(
+            androidContext(),
+            SEARCH_HISTORY_KEY,
+            object : TypeToken<ArrayList<Track>>() {}.type
+        )
+    }
+
+    single {
+        androidContext()
+            .getSharedPreferences(SEARCH_HISTORY_KEY, Context.MODE_PRIVATE)
+    }
+    single<SettingsRepository> {
+        SettingsRepositoryImpl(get())
+    }
+    single<NetworkClient> {
+        RetrofitNetworkClient(get(),get())
+    }
+    factory { Gson() }
+
+}

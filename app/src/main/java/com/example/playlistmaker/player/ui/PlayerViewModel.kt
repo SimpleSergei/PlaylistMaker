@@ -6,9 +6,6 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.playlistmaker.player.domain.PlayerState
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -17,9 +14,6 @@ class PlayerViewModel(private val url: String) : ViewModel() {
 
     companion object {
         private const val REFRESH_TIMER_DELAY = 333L
-
-        fun getFactory(trackUrl: String): ViewModelProvider.Factory =
-            viewModelFactory { initializer { PlayerViewModel(trackUrl) } }
     }
 
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default)

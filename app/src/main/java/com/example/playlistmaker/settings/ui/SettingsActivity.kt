@@ -1,15 +1,15 @@
 package com.example.playlistmaker.settings.ui
 
-
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
 import com.example.playlistmaker.databinding.ActivitySettingsBinding
+import com.example.playlistmaker.settings.domain.SettingsEvent
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -17,7 +17,7 @@ class SettingsActivity : AppCompatActivity() {
     private val binding
         get() = _binding
             ?: throw IllegalStateException("Binding for search activity must not be null")
-    private lateinit var viewModel: SettingsViewModel
+    private val viewModel: SettingsViewModel by viewModel<SettingsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         _binding = ActivitySettingsBinding.inflate(layoutInflater)
@@ -29,18 +29,12 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val sharingInteractor = Creator.provideSharingInteractor()
-        val settingsInteractor = Creator.provideSettingsInteractor()
-        viewModel = ViewModelProvider(
-            this,
-            SettingsViewModel.getFactory(sharingInteractor, settingsInteractor)
-        ).get(
-            SettingsViewModel::class.java
-        )
 
         if (viewModel.getThemeSettings()) {
             binding.themeSwitcher.isChecked = true
         }
+
+        openNavigationActivities()
 
         binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             viewModel.switchTheme()
@@ -60,6 +54,22 @@ class SettingsActivity : AppCompatActivity() {
 
         binding.license.setOnClickListener {
             viewModel.openTerms()
+        }
+    }
+
+    private fun openNavigationActivities() {
+        viewModel.observeNavigationEvent().observe(this) { event ->
+            when (event) {
+                is SettingsEvent.ShareApp -> startActivity(Intent.createChooser(event.intent, null))
+                is SettingsEvent.OpenTerms -> startActivity(
+                    Intent.createChooser(
+                        event.intent,
+                        null
+                    )
+                )
+
+                is SettingsEvent.OpenSupport -> startActivity(event.intent)
+            }
         }
     }
 }

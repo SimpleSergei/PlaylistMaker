@@ -91,4 +91,9 @@
         <item name="fontFamily">@font/ys_display_regular</item>
         <item name="android:textColor">@color/back_icon_color</item>
     </style>
+    <style name="TabLayout">
+        <item name="tabIndicatorColor">@color/back_icon_color</item>
+        <item name="tabSelectedTextColor">@color/back_icon_color</item>
+        <item name="tabTextColor">@color/back_icon_color</item>
+    </style>
 </resources>

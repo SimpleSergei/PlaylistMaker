@@ -21,14 +21,15 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerFragment : Fragment() {
-    private lateinit var binding: FragmentPlayerBinding
+    private var _binding: FragmentPlayerBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: PlayerViewModel by viewModel<PlayerViewModel> { parametersOf(track.previewUrl) }
     private lateinit var track: Track
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        _binding = FragmentPlayerBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -93,6 +94,11 @@ class PlayerFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         viewModel.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

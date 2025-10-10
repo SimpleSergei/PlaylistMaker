@@ -11,13 +11,14 @@ import com.example.playlistmaker.settings.domain.SettingsEvent
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : Fragment() {
-    private lateinit var binding: FragmentSettingsBinding
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: SettingsViewModel by viewModel<SettingsViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
+        _binding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
@@ -61,5 +62,10 @@ class SettingsFragment : Fragment() {
                 is SettingsEvent.OpenSupport -> startActivity(event.intent)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/fragments_background_color"
     tools:context=".library.ui.LibraryFragment">
 
     <FrameLayout
@@ -25,7 +26,8 @@
         app:tabIndicatorFullWidth="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin" />
+        android:layout_marginHorizontal="@dimen/default_margin"
+        android:background="@color/fragments_background_color"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewpager"

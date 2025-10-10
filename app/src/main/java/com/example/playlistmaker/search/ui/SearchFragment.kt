@@ -20,7 +20,8 @@ import com.example.playlistmaker.search.domain.TracksSearchState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchFragment : Fragment() {
-    private lateinit var binding: FragmentSearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
     private var isClickAllowed = true
     private var editTextValue: String = TEXT_DEFAULT
     private var userRequest: String = ""
@@ -35,7 +36,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -210,6 +211,11 @@ class SearchFragment : Fragment() {
             clearHistoryBtn.visibility = View.GONE
         }
         binding.progressBar.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

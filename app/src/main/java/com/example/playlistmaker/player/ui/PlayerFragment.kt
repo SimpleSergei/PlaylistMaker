@@ -1,15 +1,17 @@
 package com.example.playlistmaker.player.ui
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.activity.addCallback
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivityPlayerBinding
+import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.domain.PlayerState
 import com.example.playlistmaker.search.data.Track
 import com.google.gson.Gson
@@ -18,28 +20,24 @@ import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerActivity : AppCompatActivity() {
-    private var _binding: ActivityPlayerBinding? = null
-    private val binding
-        get() = _binding
-            ?: throw IllegalStateException("Binding for player activity must not be null")
-
+class PlayerFragment : Fragment() {
+    private var _binding: FragmentPlayerBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: PlayerViewModel by viewModel<PlayerViewModel> { parametersOf(track.previewUrl) }
     private lateinit var track: Track
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = ActivityPlayerBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.player)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        track = Gson().fromJson(intent.getStringExtra("selected_track"), Track::class.java)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentPlayerBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        viewModel.playerState.observe(this) { state ->
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        track = Gson().fromJson(requireArguments().getString(ARGS_TRACK), Track::class.java)
+
+        viewModel.playerState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 PlayerState.Default -> {
                     binding.playBtn.setImageResource(R.drawable.play_button)
@@ -62,8 +60,10 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
-
-        binding.backBtn.setOnClickListener { finish() }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            parentFragmentManager.popBackStack()
+        }
+        binding.backBtn.setOnClickListener { parentFragmentManager.popBackStack() }
         binding.playBtn.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
@@ -94,5 +94,15 @@ class PlayerActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.onPause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object {
+        private const val ARGS_TRACK = "SELECTED_TRACK"
+        fun createArgs(track: Track): Bundle = bundleOf(ARGS_TRACK to Gson().toJson(track))
     }
 }

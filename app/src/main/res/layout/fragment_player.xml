@@ -5,7 +5,8 @@
     android:id="@+id/player"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".player.ui.PlayerActivity">
+    android:background="@color/fragments_background_color"
+    tools:context=".player.ui.PlayerFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

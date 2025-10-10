@@ -15,4 +15,9 @@
     <color name="refresh_button_background">#FFFFFFFF</color>
     <color name="switcher_track_color">#9FBBF3</color>
     <color name="switcher_thumb_color">#3772E7</color>
+    <color name="bottom_navigation_background">#1A1B22</color>
+    <color name="navigation_selected_color">#3772E7</color>
+    <color name="navigation_unselected_color">#FFFFFFFF</color>
+    <color name="divider_color">#E6E8EB</color>
+    <color name="fragments_background_color">#1A1B22</color>
 </resources>

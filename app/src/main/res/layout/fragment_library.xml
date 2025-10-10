@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".library.ui.LibraryActivity">
+    android:background="@color/fragments_background_color"
+    tools:context=".library.ui.LibraryFragment">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -13,18 +14,10 @@
         android:layout_marginHorizontal="@dimen/default_margin"
         android:layout_marginBottom="8dp">
 
-        <ImageView
-            android:id="@+id/backBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/arrow_back" />
-
         <TextView
             style="@style/HeaderStyle"
             android:text="@string/library"
-            android:textSize="@dimen/strong_text_size"
-            tools:ignore="RtlSymmetry" />
+            android:textSize="@dimen/strong_text_size" />
     </FrameLayout>
 
     <com.google.android.material.tabs.TabLayout
@@ -33,7 +26,8 @@
         app:tabIndicatorFullWidth="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/default_margin" />
+        android:layout_marginHorizontal="@dimen/default_margin"
+        android:background="@color/fragments_background_color"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewpager"

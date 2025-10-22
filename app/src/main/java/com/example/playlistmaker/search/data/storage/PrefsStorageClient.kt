@@ -12,18 +12,13 @@ const val SEARCH_HISTORY_KEY = "SEARCH_HISTORY"
 class PrefsStorageClient<T>(
     context: Context, private val dataKey: String, private val type: Type
 ) : StorageClient<T> {
-    companion object {
-        private const val MAX_COUNT_TRACKS = 10
-    }
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences(SEARCH_HISTORY_KEY, Context.MODE_PRIVATE)
     private val gson = Gson()
     override fun storageData(data: T) {
         require(data is ArrayList<*>) { "Data must be ArrayList" }
-        val dataList = data as ArrayList<*>
-        if (dataList.size > MAX_COUNT_TRACKS) dataList.removeAt(0)
-        prefs.edit { putString(dataKey, gson.toJson(dataList, type)) }
+        prefs.edit { putString(dataKey, gson.toJson(data, type)) }
     }
 
     override fun getData(): T? {
@@ -37,7 +32,7 @@ class PrefsStorageClient<T>(
 
     override fun deleteData() {
         prefs.edit {
-            remove(SEARCH_HISTORY_KEY)
+            remove(dataKey)
         }
     }
 }

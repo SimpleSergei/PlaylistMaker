@@ -1,31 +1,27 @@
 package com.example.playlistmaker.search.ui
 
-import android.content.Intent
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
-import com.example.playlistmaker.databinding.ActivitySearchBinding
-import com.example.playlistmaker.player.ui.PlayerActivity
+import com.example.playlistmaker.databinding.FragmentSearchBinding
+import com.example.playlistmaker.player.ui.PlayerFragment
 import com.example.playlistmaker.search.data.Track
 import com.example.playlistmaker.search.domain.TracksSearchState
-import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
-    private var _binding: ActivitySearchBinding? = null
-    private val binding
-        get() = _binding
-            ?: throw IllegalStateException("Binding for search activity must not be null")
-
+class SearchFragment : Fragment() {
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
     private var isClickAllowed = true
     private var editTextValue: String = TEXT_DEFAULT
     private var userRequest: String = ""
@@ -37,18 +33,17 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var searchHistoryAdapter: TrackAdapter
     private val viewModel: TracksSearchViewModel by viewModel<TracksSearchViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        _binding = ActivitySearchBinding.inflate(layoutInflater)
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.search)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        viewModel.observeState().observe(this) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.observeState().observe(viewLifecycleOwner) {
             render(it)
         }
 
@@ -57,9 +52,10 @@ class SearchActivity : AppCompatActivity() {
 
         searchHistoryAdapter.onTrackClickListener = { trackForecast ->
             if (clickDebounce()) {
-                val playerIntent = Intent(this, PlayerActivity::class.java)
-                playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
-                startActivity(playerIntent)
+                findNavController().navigate(
+                    R.id.action_searchFragment_to_playerFragment,
+                    PlayerFragment.createArgs(trackForecast)
+                )
             }
         }
 
@@ -68,15 +64,12 @@ class SearchActivity : AppCompatActivity() {
 
         tracksAdapter.onTrackClickListener = { trackForecast ->
             if (clickDebounce()) {
-                val playerIntent = Intent(this, PlayerActivity::class.java)
                 viewModel.saveToHistory(trackForecast)
-                playerIntent.putExtra("selected_track", Gson().toJson(trackForecast))
-                startActivity(playerIntent)
+                findNavController().navigate(
+                    R.id.action_searchFragment_to_playerFragment,
+                    PlayerFragment.createArgs(trackForecast)
+                )
             }
-        }
-
-        binding.backBtn.setOnClickListener {
-            finish()
         }
 
         binding.clearHistoryBtn.setOnClickListener {
@@ -102,8 +95,8 @@ class SearchActivity : AppCompatActivity() {
             }
             viewModel.loadSearchHistory()
             val inputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
+                requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
         }
 
         binding.refreshBtn.setOnClickListener {
@@ -218,6 +211,11 @@ class SearchActivity : AppCompatActivity() {
             clearHistoryBtn.visibility = View.GONE
         }
         binding.progressBar.visibility = View.VISIBLE
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

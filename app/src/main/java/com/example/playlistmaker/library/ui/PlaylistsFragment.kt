@@ -18,9 +18,7 @@ class PlaylistsFragment: Fragment() {
 
     private val viewModel: PlaylistsViewModel by viewModel<PlaylistsViewModel>()
     private var _binding: FragmentPlaylistsBinding? = null
-    private val binding
-        get() = _binding
-            ?: throw IllegalStateException("Binding for playlists fragment must not be null")
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,5 +27,10 @@ class PlaylistsFragment: Fragment() {
     ): View? {
         _binding = FragmentPlaylistsBinding.inflate(inflater,container,false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

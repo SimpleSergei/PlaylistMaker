@@ -15,7 +15,7 @@ import java.util.Locale
 class PlayerViewModel(private val url: String) : ViewModel() {
 
     companion object {
-        private const val REFRESH_TIMER_DELAY = 333L
+        private const val REFRESH_TIMER_DELAY = 300L
     }
 
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default)
@@ -23,6 +23,9 @@ class PlayerViewModel(private val url: String) : ViewModel() {
 
     private var timerJob: Job? = null
     private val mediaPlayer = MediaPlayer()
+    private val timerFormat by lazy {
+        SimpleDateFormat("mm:ss", Locale.getDefault())
+    }
 
     init {
         preparePlayer()
@@ -74,6 +77,7 @@ class PlayerViewModel(private val url: String) : ViewModel() {
     }
 
     private fun startTimerUpdate() {
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
                 delay(REFRESH_TIMER_DELAY)
@@ -83,8 +87,7 @@ class PlayerViewModel(private val url: String) : ViewModel() {
     }
 
     private fun getCurrentPlayerPosition(): String {
-        if (mediaPlayer.currentPosition < 0) return "00:00"
-        return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
-            ?: "00:00"
+        if (mediaPlayer.currentPosition < 0) return timerFormat.format(0)
+        return timerFormat.format(mediaPlayer.currentPosition) ?: timerFormat.format(0)
     }
 }

@@ -136,6 +136,7 @@ class SearchFragment : Fragment() {
     }
 
     fun render(state: TracksSearchState) {
+        hideAllStates()
         when (state) {
             is TracksSearchState.Loading -> showLoading()
             is TracksSearchState.Content -> showContent(state.track)
@@ -188,20 +189,27 @@ class SearchFragment : Fragment() {
 
     private fun showContent(tracksList: List<Track>) {
         binding.recyclerView.visibility = View.VISIBLE
-        binding.progressBar.visibility = View.GONE
         tracks.clear()
         tracks.addAll(tracksList)
         tracksAdapter.notifyDataSetChanged()
     }
 
     private fun showLoading() {
-        binding.recyclerView.visibility = View.GONE
+           binding.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun hideAllStates() {
         with(binding) {
+            progressBar.visibility = View.GONE
+            errorMessage.visibility = View.GONE
+            nothingFoundImg.visibility = View.GONE
+            somethingWentWrongImg.visibility = View.GONE
+            refreshBtn.visibility = View.GONE
+            recyclerView.visibility = View.GONE
             youSearchTxt.visibility = View.GONE
             recyclerViewHistory.visibility = View.GONE
             clearHistoryBtn.visibility = View.GONE
         }
-        binding.progressBar.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

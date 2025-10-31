@@ -23,7 +23,7 @@ import java.util.Locale
 class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel> { parametersOf(track.previewUrl) }
+    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel> { parametersOf(track) }
     private lateinit var track: Track
 
     override fun onCreateView(

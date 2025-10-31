@@ -1,6 +1,11 @@
 package com.example.playlistmaker.di
 
 import android.content.Context
+import androidx.room.Room
+import com.example.playlistmaker.library.data.FavoriteRepositoryImpl
+import com.example.playlistmaker.library.data.db.AppDataBase
+import com.example.playlistmaker.library.data.db.TrackDbConverter
+import com.example.playlistmaker.library.domain.FavoriteRepository
 import com.example.playlistmaker.search.data.NetworkClient
 import com.example.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.StorageClient
@@ -51,5 +56,14 @@ val dataModule = module {
         RetrofitNetworkClient(get(),get())
     }
     factory { Gson() }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDataBase::class.java, "database.db")
+            .build()
+    }
+    factory { TrackDbConverter() }
+    single<FavoriteRepository> {
+        FavoriteRepositoryImpl(get(),get())
+    }
 
 }

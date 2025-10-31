@@ -1,16 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-}
+    alias(libs.plugins.kotlin.kapt)
+    }
 
 android {
     namespace = "com.example.playlistmaker"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.playlistmaker"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -37,6 +38,13 @@ android {
         viewBinding = true
     }
 }
+//configurations.all {
+//    resolutionStrategy {
+//        force("org.jetbrains:annotations:23.0.0")
+//
+//        exclude(group = "com.intellij", module = "annotations")
+//    }
+//}
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
@@ -52,10 +60,13 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation (libs.glide)
-    annotationProcessor (libs.glide.compiler)
+    kapt (libs.glide.compiler)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
     implementation(libs.androidx.lifecycle)
     implementation(libs.koin.android)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 }

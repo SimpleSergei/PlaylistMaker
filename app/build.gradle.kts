@@ -1,16 +1,17 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-}
+    alias(libs.plugins.ksp)
+    }
 
 android {
     namespace = "com.example.playlistmaker"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.playlistmaker"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -58,4 +59,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.androidx.lifecycle)
     implementation(libs.koin.android)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 }

@@ -1,11 +1,13 @@
 package com.example.playlistmaker.search.domain
 
 import com.example.playlistmaker.search.data.Track
+import kotlinx.coroutines.flow.Flow
 
 class SearchHistoryInteractorImpl(private val repository: SearchHistoryRepository):
     SearchHistoryInteractor {
-    override fun getHistory(consumer: SearchHistoryInteractor.HistoryConsumer) {
-        consumer.consume(repository.getHistory().data)
+
+    override fun getHistory(): Flow<List<Track>> {
+        return repository.getHistory()
     }
 
     override fun saveToHistory(t: Track) {

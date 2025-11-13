@@ -2,10 +2,10 @@ package com.example.playlistmaker.search.data.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.example.playlistmaker.search.data.StorageClient
 import com.google.gson.Gson
 import java.lang.reflect.Type
-import androidx.core.content.edit
 
 const val SEARCH_HISTORY_KEY = "SEARCH_HISTORY"
 

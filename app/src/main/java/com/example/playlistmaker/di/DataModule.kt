@@ -34,7 +34,7 @@ val dataModule = module {
             .create(iTunesApi::class.java)
     }
     single<SearchHistoryRepository> {
-        SearchHistoryRepositoryImpl(get())
+        SearchHistoryRepositoryImpl(get(), get())
     }
 
     single<StorageClient<ArrayList<Track>>> {

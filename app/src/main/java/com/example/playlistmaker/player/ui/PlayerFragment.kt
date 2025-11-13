@@ -37,6 +37,13 @@ class PlayerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         track = Gson().fromJson(requireArguments().getString(ARGS_TRACK), Track::class.java)
 
+        if (track.isFavorite) {
+            binding.favoriteBtn.setImageResource(R.drawable.favorite_true_button)
+        }
+        else {
+            binding.favoriteBtn.setImageResource(R.drawable.favorite_false_button)
+        }
+
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 PlayerState.Default -> {
@@ -60,6 +67,14 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            when (isFavorite) {
+                true -> binding.favoriteBtn.setImageResource(R.drawable.favorite_true_button)
+                false -> binding.favoriteBtn.setImageResource(R.drawable.favorite_false_button)
+            }
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             parentFragmentManager.popBackStack()
         }
@@ -67,6 +82,7 @@ class PlayerFragment : Fragment() {
         binding.playBtn.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
+        binding.favoriteBtn.setOnClickListener { viewModel.onFavoriteClicked() }
 
 
         Glide.with(binding.coverTrack)

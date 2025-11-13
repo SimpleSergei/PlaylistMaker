@@ -93,7 +93,7 @@ class SearchFragment : Fragment() {
                 refreshBtn.visibility = View.GONE
                 recyclerView.visibility = View.GONE
             }
-            viewModel.loadSearchHistory()
+
             val inputMethodManager =
                 requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
@@ -113,6 +113,8 @@ class SearchFragment : Fragment() {
             userRequest = text?.toString() ?: ""
             if (!text.isNullOrEmpty()) {
                 viewModel.searchDebounce(changedText = text.toString())
+            } else {
+                viewModel.loadSearchHistory()
             }
         }
 

@@ -1,10 +1,17 @@
 package com.example.playlistmaker.search.data
 
+import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 const val MAX_COUNT_TRACKS = 10
 
-class SearchHistoryRepositoryImpl(private val storage: StorageClient<ArrayList<Track>>):
+class SearchHistoryRepositoryImpl(
+    private val storage: StorageClient<ArrayList<Track>>,
+    private val appDataBase: AppDataBase
+) :
     SearchHistoryRepository {
     override fun saveToHistory(t: Track) {
         val currentTracks = storage.getData() ?: arrayListOf()
@@ -18,9 +25,14 @@ class SearchHistoryRepositoryImpl(private val storage: StorageClient<ArrayList<T
         storage.storageData(currentTracks)
     }
 
-    override fun getHistory(): Resource<List<Track>> {
-        val tracks = storage.getData()?:listOf()
-        return Resource.Success(tracks)
+    override fun getHistory(): Flow<List<Track>> {
+        return appDataBase.trackDao().getFavoriteTracks().map { favoriteTracksEntities ->
+            val tracks = storage.getData() ?: emptyList()
+            val favoriteTrackIds = favoriteTracksEntities.map { it.trackId }
+            tracks.map { track ->
+                track.copy(isFavorite = favoriteTrackIds.contains(track.trackId))
+            }
+        }
     }
 
     override fun clearHistory() {

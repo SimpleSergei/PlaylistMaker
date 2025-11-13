@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
+    alias(libs.plugins.ksp)
     }
 
 android {
@@ -38,13 +38,6 @@ android {
         viewBinding = true
     }
 }
-//configurations.all {
-//    resolutionStrategy {
-//        force("org.jetbrains:annotations:23.0.0")
-//
-//        exclude(group = "com.intellij", module = "annotations")
-//    }
-//}
 
 dependencies {
     implementation(libs.kotlinx.coroutines.core)
@@ -60,7 +53,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation (libs.glide)
-    kapt (libs.glide.compiler)
+    annotationProcessor (libs.glide.compiler)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
@@ -68,5 +61,5 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 }

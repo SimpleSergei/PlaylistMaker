@@ -9,6 +9,7 @@ import com.example.playlistmaker.search.domain.SearchHistoryInteractor
 import com.example.playlistmaker.search.domain.TracksInteractor
 import com.example.playlistmaker.search.domain.TracksSearchState
 import com.example.playlistmaker.utils.debounce
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class TracksSearchViewModel(
@@ -24,6 +25,7 @@ class TracksSearchViewModel(
     fun observeState(): LiveData<TracksSearchState> = stateLiveData
 
     private var latestSearchText: String? = null
+    private var historyJob: Job? = null
     private val trackSearchDebounce =
         debounce<String>(SEARCH_DEBOUNCE_DELAY, viewModelScope, true) { changedText ->
             searchRequest(changedText)
@@ -36,6 +38,7 @@ class TracksSearchViewModel(
     fun searchDebounce(changedText: String, forceRefresh: Boolean = false) {
         if (!forceRefresh && latestSearchText == changedText) return
         this.latestSearchText = changedText
+        historyJob?.cancel()
         trackSearchDebounce(changedText)
     }
 
@@ -49,12 +52,12 @@ class TracksSearchViewModel(
     }
 
     fun loadSearchHistory() {
-        searchHistoryInteractor.getHistory(object : SearchHistoryInteractor.HistoryConsumer {
-            override fun consume(searchHistory: List<Track>?) {
-                val history = searchHistory ?: emptyList()
+        historyJob?.cancel()
+        historyJob = viewModelScope.launch {
+            searchHistoryInteractor.getHistory().collect { history ->
                 renderState(TracksSearchState.SearchHistory(history))
             }
-        })
+        }
     }
 
     private fun searchRequest(newSearchText: String) {

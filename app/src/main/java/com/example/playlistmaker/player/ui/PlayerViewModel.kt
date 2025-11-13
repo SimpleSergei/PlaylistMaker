@@ -23,6 +23,9 @@ class PlayerViewModel(private val track: Track, private val favoriteInteractor: 
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default)
     val playerState: LiveData<PlayerState> = _playerState
 
+    private val _isFavorite = MutableLiveData<Boolean>()
+    val isFavorite: LiveData<Boolean> = _isFavorite
+
     private var timerJob: Job? = null
     private val mediaPlayer = MediaPlayer()
     private val timerFormat by lazy {
@@ -55,7 +58,16 @@ class PlayerViewModel(private val track: Track, private val favoriteInteractor: 
     }
 
     fun onFavoriteClicked() {
-
+        viewModelScope.launch {
+            val currentFavoriteState = _isFavorite.value ?: track.isFavorite
+            if (currentFavoriteState) {
+                favoriteInteractor.deleteFromFavorite(track)
+                _isFavorite.postValue(false)
+            } else {
+                favoriteInteractor.saveToFavorite(track)
+                _isFavorite.postValue(true)
+            }
+        }
     }
 
     private fun preparePlayer() {

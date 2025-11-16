@@ -1,6 +1,6 @@
 package com.example.playlistmaker.library.domain
 
-import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
 
 class FavoriteInteractorImpl(private val favoriteRepository: FavoriteRepository) :
@@ -15,5 +15,9 @@ class FavoriteInteractorImpl(private val favoriteRepository: FavoriteRepository)
 
     override suspend fun deleteFromFavorite(t: Track) {
         favoriteRepository.deleteFromFavorite(t)
+    }
+
+    override suspend fun getFavoriteTracksId(): List<String> {
+        return favoriteRepository.getFavoriteTracksId()
     }
 }

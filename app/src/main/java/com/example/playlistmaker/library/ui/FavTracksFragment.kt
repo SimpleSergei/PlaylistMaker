@@ -12,7 +12,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentFavTracksBinding
 import com.example.playlistmaker.library.domain.FavoriteTracksState
 import com.example.playlistmaker.player.ui.PlayerFragment
-import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.TrackAdapter
 import com.example.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -49,14 +49,11 @@ class FavTracksFragment : Fragment() {
         tracksAdapter = TrackAdapter(tracksFavorite)
         binding.recyclerView.adapter = tracksAdapter
 
-        println("DEBUG: FavTracksFragment - onViewCreated started")
-
         onTrackClickDebounce = debounce(
             CLICK_DEBOUNCE_DELAY,
             viewLifecycleOwner.lifecycleScope,
             false
         ) { track ->
-            println("DEBUG: FavTracksFragment - debounce callback for track: ${track.trackName}")
             findNavController().navigate(
                 R.id.action_libraryFragment_to_playerFragment,
                 PlayerFragment.createArgs(track)
@@ -64,18 +61,15 @@ class FavTracksFragment : Fragment() {
         }
 
         tracksAdapter.onTrackClickListener = { trackForecast ->
-            println("DEBUG: FavTracksFragment - adapter click for track: ${trackForecast.trackName}")
             onTrackClickDebounce(trackForecast)
         }
 
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
-            println("DEBUG: FavTracksFragment - state observed: $state")
             when (state) {
                 is FavoriteTracksState.Empty -> showEmptyState()
                 is FavoriteTracksState.Content -> showFavoriteTracks(state.tracks)
             }
         }
-        println("DEBUG: FavTracksFragment - onViewCreated completed")
     }
 
     private fun showEmptyState() {
@@ -87,7 +81,6 @@ class FavTracksFragment : Fragment() {
     }
 
     private fun showFavoriteTracks(tracks: List<Track>) {
-        println("DEBUG: FavTracksFragment - showing ${tracks.size} tracks")
         tracksFavorite.clear()
         tracksFavorite.addAll(tracks)
         tracksAdapter.notifyDataSetChanged()

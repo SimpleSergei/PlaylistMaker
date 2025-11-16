@@ -2,6 +2,7 @@ package com.example.playlistmaker.search.data
 
 import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -30,7 +31,7 @@ class SearchHistoryRepositoryImpl(
             val tracks = storage.getData() ?: emptyList()
             val favoriteTrackIds = favoriteTracksEntities.map { it.trackId }
             tracks.map { track ->
-                track.copy(isFavorite = favoriteTrackIds.contains(track.trackId))
+                track.copy(isFavorite = false)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.data
+package com.example.playlistmaker.search.domain
 
 data class Track(
     val trackId: String, //ID композиции

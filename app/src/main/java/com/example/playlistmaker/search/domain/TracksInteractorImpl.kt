@@ -1,7 +1,7 @@
 package com.example.playlistmaker.search.domain
 
 import com.example.playlistmaker.search.data.Resource
-import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -5,16 +5,17 @@ import androidx.room.Room
 import com.example.playlistmaker.library.data.FavoriteRepositoryImpl
 import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.library.data.db.TrackDbConverter
+import com.example.playlistmaker.library.data.db.dao.TrackDao
 import com.example.playlistmaker.library.domain.FavoriteRepository
 import com.example.playlistmaker.search.data.NetworkClient
 import com.example.playlistmaker.search.data.SearchHistoryRepositoryImpl
 import com.example.playlistmaker.search.data.StorageClient
-import com.example.playlistmaker.search.data.Track
 import com.example.playlistmaker.search.data.network.RetrofitNetworkClient
 import com.example.playlistmaker.search.data.network.iTunesApi
 import com.example.playlistmaker.search.data.storage.PrefsStorageClient
 import com.example.playlistmaker.search.data.storage.SEARCH_HISTORY_KEY
 import com.example.playlistmaker.search.domain.SearchHistoryRepository
+import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.settings.data.SettingsRepositoryImpl
 import com.example.playlistmaker.settings.domain.SettingsRepository
 import com.google.gson.Gson
@@ -65,5 +66,6 @@ val dataModule = module {
     single<FavoriteRepository> {
         FavoriteRepositoryImpl(get(),get())
     }
+    single<TrackDao> { get<AppDataBase>().trackDao() }
 
 }

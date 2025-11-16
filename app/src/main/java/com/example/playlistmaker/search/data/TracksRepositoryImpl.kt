@@ -3,6 +3,7 @@ package com.example.playlistmaker.search.data
 import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.search.data.dto.TracksSearchRequest
 import com.example.playlistmaker.search.data.dto.TracksSearchResponse
+import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.TracksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -29,7 +30,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient, private val
                         it.releaseDate ?: "Unknown",
                         it.primaryGenreName,
                         it.country, it.previewUrl ?: "Unknown",
-                        isFavorite = favoriteTracksId.contains(it.trackId)
+                        isFavorite = false
                     )
                 }
                 emit(Resource.Success(data))

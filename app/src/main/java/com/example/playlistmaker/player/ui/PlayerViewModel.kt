@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.domain.FavoriteInteractor
 import com.example.playlistmaker.player.domain.PlayerState
-import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -71,6 +71,12 @@ class PlayerViewModel(private val track: Track, private val favoriteInteractor: 
     }
 
     private fun preparePlayer() {
+        viewModelScope.launch {
+            val favoriteTracksId = favoriteInteractor.getFavoriteTracksId()
+            val isTrackFavorite = favoriteTracksId.contains(track.trackId)
+            _isFavorite.postValue(isTrackFavorite)
+        }
+
         mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepareAsync()
         mediaPlayer.setOnPreparedListener {

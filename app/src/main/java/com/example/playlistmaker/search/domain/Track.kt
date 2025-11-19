@@ -1,4 +1,4 @@
-package com.example.playlistmaker.search.data
+package com.example.playlistmaker.search.domain
 
 data class Track(
     val trackId: String, //ID композиции
@@ -10,5 +10,6 @@ data class Track(
     val releaseDate: String, // Год релиза трека
     val primaryGenreName: String, // Жанр трека
     val country: String, // Страна исполнителя
-    val previewUrl: String // Превью
+    val previewUrl: String, // Превью
+    var isFavorite: Boolean = false // В избранных
 )

@@ -1,12 +1,14 @@
 package com.example.playlistmaker.search.data
 
+import com.example.playlistmaker.library.data.db.AppDataBase
 import com.example.playlistmaker.search.data.dto.TracksSearchRequest
 import com.example.playlistmaker.search.data.dto.TracksSearchResponse
+import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.TracksRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRepository {
+class TracksRepositoryImpl(private val networkClient: NetworkClient, private val appDataBase: AppDataBase) : TracksRepository {
     override fun searchTracks(expression: String): Flow<Resource<List<Track>>> = flow {
         val response = networkClient.doRequest(TracksSearchRequest(expression))
         when (response.resultCode) {
@@ -16,6 +18,7 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
 
             200 -> {
                 val tracksResponse = response as TracksSearchResponse
+                val favoriteTracksId = appDataBase.trackDao().getFavoriteTracksId()
                 val data = tracksResponse.results.map {
                     Track(
                         it.trackId,
@@ -26,7 +29,8 @@ class TracksRepositoryImpl(private val networkClient: NetworkClient) : TracksRep
                         it.collectionName,
                         it.releaseDate ?: "Unknown",
                         it.primaryGenreName,
-                        it.country, it.previewUrl ?: "Unknown"
+                        it.country, it.previewUrl ?: "Unknown",
+                        isFavorite = false
                     )
                 }
                 emit(Resource.Success(data))

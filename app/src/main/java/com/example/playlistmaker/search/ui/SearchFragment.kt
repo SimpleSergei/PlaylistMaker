@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentSearchBinding
 import com.example.playlistmaker.player.ui.PlayerFragment
-import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.domain.TracksSearchState
 import com.example.playlistmaker.utils.debounce
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -93,7 +93,7 @@ class SearchFragment : Fragment() {
                 refreshBtn.visibility = View.GONE
                 recyclerView.visibility = View.GONE
             }
-            viewModel.loadSearchHistory()
+
             val inputMethodManager =
                 requireActivity().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(binding.clearBtn.windowToken, 0)
@@ -113,6 +113,8 @@ class SearchFragment : Fragment() {
             userRequest = text?.toString() ?: ""
             if (!text.isNullOrEmpty()) {
                 viewModel.searchDebounce(changedText = text.toString())
+            } else {
+                viewModel.loadSearchHistory()
             }
         }
 

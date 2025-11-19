@@ -13,7 +13,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
 import com.example.playlistmaker.player.domain.PlayerState
-import com.example.playlistmaker.search.data.Track
+import com.example.playlistmaker.search.domain.Track
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -23,7 +23,7 @@ import java.util.Locale
 class PlayerFragment : Fragment() {
     private var _binding: FragmentPlayerBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel> { parametersOf(track.previewUrl) }
+    private val viewModel: PlayerViewModel by viewModel<PlayerViewModel> { parametersOf(track) }
     private lateinit var track: Track
 
     override fun onCreateView(
@@ -36,6 +36,13 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         track = Gson().fromJson(requireArguments().getString(ARGS_TRACK), Track::class.java)
+
+        if (track.isFavorite) {
+            binding.favoriteBtn.setImageResource(R.drawable.favorite_true_button)
+        }
+        else {
+            binding.favoriteBtn.setImageResource(R.drawable.favorite_false_button)
+        }
 
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -60,6 +67,14 @@ class PlayerFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.isFavorite.observe(viewLifecycleOwner) { isFavorite ->
+            when (isFavorite) {
+                true -> binding.favoriteBtn.setImageResource(R.drawable.favorite_true_button)
+                false -> binding.favoriteBtn.setImageResource(R.drawable.favorite_false_button)
+            }
+        }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             parentFragmentManager.popBackStack()
         }
@@ -67,6 +82,7 @@ class PlayerFragment : Fragment() {
         binding.playBtn.setOnClickListener {
             viewModel.onPlayButtonClicked()
         }
+        binding.favoriteBtn.setOnClickListener { viewModel.onFavoriteClicked() }
 
 
         Glide.with(binding.coverTrack)

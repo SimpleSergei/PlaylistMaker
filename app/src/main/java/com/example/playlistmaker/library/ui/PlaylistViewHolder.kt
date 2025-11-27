@@ -25,4 +25,5 @@ class PlaylistViewHolder(view: View): RecyclerView.ViewHolder(view) {
             .placeholder(R.drawable.playlist_cover_mockup)
             .into(playlistCover)
     }
+
 }

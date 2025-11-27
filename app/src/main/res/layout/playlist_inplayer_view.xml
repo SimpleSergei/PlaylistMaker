@@ -3,19 +3,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/track_layout_height_61dp"
-    android:paddingHorizontal="15dp">
+>
 
     <ImageView
         android:id="@+id/playlist_player_cover"
         android:layout_width="@dimen/track_cover_size_45dp"
         android:layout_height="@dimen/track_cover_size_45dp"
-        android:layout_gravity="center_vertical" />
+        android:layout_gravity="center_vertical"
+        android:scaleType="center"
+        android:background="@drawable/rounded_rectangle"
+        android:clipToOutline="true"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginHorizontal="@dimen/track_margin_66dp"
+        android:layout_marginHorizontal="53dp"
         android:orientation="vertical">
 
         <TextView

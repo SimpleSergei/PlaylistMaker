@@ -1,12 +1,14 @@
 package com.example.playlistmaker.library.domain
 
+import android.content.Context
+import android.net.Uri
 import com.example.playlistmaker.search.domain.Track
 import kotlinx.coroutines.flow.Flow
 
 class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository) :
     PlaylistInteractor {
-    override suspend fun createPlaylist(p: Playlist) {
-        playlistRepository.createPlaylist(p)
+    override suspend fun createPlaylist(name: String, description: String, coverPath: String) {
+        playlistRepository.createPlaylist(name, description, coverPath)
     }
 
     override suspend fun deletePlaylist(p: Playlist) {
@@ -21,10 +23,11 @@ class PlaylistInteractorImpl(private val playlistRepository: PlaylistRepository)
         playlistRepository.addToPlaylistTracksTable(t)
     }
 
-    override suspend fun addToPlaylist(
-        t: Track,
-        p: Playlist
-    ) {
+    override suspend fun addToPlaylist(t: Track, p: Playlist) {
         playlistRepository.addToPlaylist(t,p)
+    }
+
+    override fun copyImageToInternalStorage(context: Context, uri: Uri): Uri {
+        return playlistRepository.copyImageToInternalStorage(context, uri)
     }
 }

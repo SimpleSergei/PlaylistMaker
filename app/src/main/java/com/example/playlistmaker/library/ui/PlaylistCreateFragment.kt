@@ -13,10 +13,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlaylistCreateBinding
-import com.example.playlistmaker.library.domain.Playlist
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistCreateFragment : Fragment() {
@@ -32,8 +30,6 @@ class PlaylistCreateFragment : Fragment() {
                 selectedImageUri = uri
                 Glide.with(binding.imageRectangle)
                     .load(uri)
-                    .centerCrop()
-                    .transform(RoundedCorners(8))
                     .into(binding.imageRectangle)
             }
         }
@@ -79,31 +75,8 @@ class PlaylistCreateFragment : Fragment() {
         binding.playlistCreateBtn.setOnClickListener {
             val playlistName = binding.playlistName.text?.toString() ?: ""
             val playlistDescription = binding.playlistDescription.text?.toString() ?: ""
-            selectedImageUri?.let { uri ->
-                viewModel.copyImageToInternalStorage(requireContext(),uri) { internalUri ->
-                    val playlist = Playlist(
-                        playlistId = 0,
-                        playlistName = playlistName,
-                        playlistDescription = playlistDescription,
-                        playlistCoverPath = internalUri.toString(),
-                        tracksId = "",
-                        tracksCount = 0
-                    )
-                    viewModel.createPlaylist(playlist)
+            viewModel.createPlaylist(playlistName,playlistDescription,requireContext(),selectedImageUri)
                     showSuccessToast(playlistName)
-                }
-            } ?: run {
-                val playlist = Playlist(
-                    playlistId = 0,
-                    playlistName = playlistName,
-                    playlistDescription = playlistDescription,
-                    playlistCoverPath = "",
-                    tracksId = "",
-                    tracksCount = 0
-                )
-                viewModel.createPlaylist(playlist)
-                showSuccessToast(playlistName)
-            }
         }
 
         binding.imageRectangle.setOnClickListener {

@@ -1,6 +1,5 @@
 package com.example.playlistmaker.search.domain
 
-import com.example.playlistmaker.search.domain.Track
 
 sealed interface TracksSearchState {
     object Loading : TracksSearchState

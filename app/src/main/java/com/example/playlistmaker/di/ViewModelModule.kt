@@ -1,6 +1,7 @@
 package com.example.playlistmaker.di
 
 import com.example.playlistmaker.library.ui.FavTracksViewModel
+import com.example.playlistmaker.library.ui.PlaylistCreateViewModel
 import com.example.playlistmaker.library.ui.PlaylistsViewModel
 import com.example.playlistmaker.player.ui.PlayerViewModel
 import com.example.playlistmaker.search.domain.Track
@@ -13,16 +14,19 @@ val viewModelModule = module {
     viewModel<TracksSearchViewModel> {
         TracksSearchViewModel(get(), get())
     }
-    viewModel<SettingsViewModel>{
-        SettingsViewModel(get(),get())
+    viewModel<SettingsViewModel> {
+        SettingsViewModel(get(), get())
     }
-    viewModel<PlayerViewModel>{ (track: Track) ->
-        PlayerViewModel(track,get())
+    viewModel<PlayerViewModel> { (track: Track) ->
+        PlayerViewModel(track, get(),get())
     }
     viewModel<FavTracksViewModel> {
         FavTracksViewModel(get())
     }
     viewModel<PlaylistsViewModel> {
-        PlaylistsViewModel()
+        PlaylistsViewModel(get())
+    }
+    viewModel<PlaylistCreateViewModel>{
+        PlaylistCreateViewModel(get())
     }
 }

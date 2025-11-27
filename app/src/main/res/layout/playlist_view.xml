@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="8dp">
+
+    <ImageView
+        android:id="@+id/view_playlist_cover"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:scaleType="center"
+        android:background="@drawable/rounded_rectangle"
+        android:clipToOutline="true" />
+
+    <TextView
+        android:id="@+id/view_playlist_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/ys_display_regular"
+        android:singleLine="true"
+        android:text="TEST"
+        android:textSize="12sp"
+        android:textColor="@color/back_icon_color"/>
+
+    <TextView
+        android:id="@+id/view_tracks_in_playlist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/ys_display_regular"
+        android:singleLine="true"
+        android:text="test"
+        android:textSize="12sp"
+        android:textColor="@color/back_icon_color"/>
+</androidx.appcompat.widget.LinearLayoutCompat>

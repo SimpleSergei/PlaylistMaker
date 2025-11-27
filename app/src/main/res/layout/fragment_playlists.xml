@@ -3,7 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/fragments_background_color">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/left_guideline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="12dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/right_guideline"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="12dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/newPlaylist"
@@ -16,7 +31,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/playlist_recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/button_margin_8dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/newPlaylist"
+        app:layout_constraintStart_toStartOf="@id/left_guideline"
+        app:layout_constraintEnd_toStartOf="@id/right_guideline"
+        app:spanCount="2"
+        tools:listitem="@layout/playlist_view" />
+
     <ImageView
+        android:visibility="gone"
         android:id="@+id/nothingFoundImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,6 +56,7 @@
         app:layout_constraintTop_toBottomOf="@+id/newPlaylist" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/NoPlayLists"
         style="@style/SearchErrorText"
         android:layout_width="wrap_content"

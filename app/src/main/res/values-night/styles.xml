@@ -110,4 +110,20 @@
         <item name="itemPaddingBottom">8dp</item>
     </style>
 
+    <style name="Playlist_Create_Text_Hint">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/back_icon_color</item>
+        <item name="hintTextColor">@color/back_icon_color</item>
+        <item name="android:textColorHint">@color/back_icon_color</item>
+    </style>
+
+    <style name="Playlist_create_button">
+        <item name="android:background">@drawable/rounded_blue_rectangle</item>
+        <item name="backgroundTint">@drawable/playlist_create_button_selector</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

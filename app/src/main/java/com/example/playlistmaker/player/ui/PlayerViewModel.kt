@@ -6,15 +6,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.library.domain.FavoriteInteractor
+import com.example.playlistmaker.library.domain.Playlist
+import com.example.playlistmaker.library.domain.PlaylistInteractor
 import com.example.playlistmaker.player.domain.PlayerState
 import com.example.playlistmaker.search.domain.Track
+import com.example.playlistmaker.sharing.data.SingleLiveEvent
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val track: Track, private val favoriteInteractor: FavoriteInteractor) : ViewModel() {
+class PlayerViewModel(
+    private val track: Track,
+    private val favoriteInteractor: FavoriteInteractor,
+    private val playlistInteractor: PlaylistInteractor
+) : ViewModel() {
 
     companion object {
         private const val REFRESH_TIMER_DELAY = 300L
@@ -25,6 +32,9 @@ class PlayerViewModel(private val track: Track, private val favoriteInteractor: 
 
     private val _isFavorite = MutableLiveData<Boolean>()
     val isFavorite: LiveData<Boolean> = _isFavorite
+
+    private val _isAddingSuccessful = SingleLiveEvent<Pair<Boolean, String>>()
+    val isAddingSuccessful: LiveData<Pair<Boolean, String>> = _isAddingSuccessful
 
     private var timerJob: Job? = null
     private val mediaPlayer = MediaPlayer()
@@ -113,5 +123,26 @@ class PlayerViewModel(private val track: Track, private val favoriteInteractor: 
     private fun getCurrentPlayerPosition(): String {
         if (mediaPlayer.currentPosition < 0) return timerFormat.format(0)
         return timerFormat.format(mediaPlayer.currentPosition) ?: timerFormat.format(0)
+    }
+
+    fun loadPlaylists(onLoaded: (List<Playlist>) -> Unit) {
+        viewModelScope.launch {
+            playlistInteractor.getPlaylists()
+                .collect { playlists ->
+                    onLoaded(playlists)
+                }
+        }
+    }
+
+    fun addTrackToPlaylist(playlist: Playlist) {
+        viewModelScope.launch {
+            if (playlist.tracksId.contains(track.trackId)) {
+                _isAddingSuccessful.postValue(Pair(false,playlist.playlistName))
+            } else {
+                playlistInteractor.addToPlaylist(track, playlist)
+                playlistInteractor.addToPlaylistTracksTable(track)
+                _isAddingSuccessful.postValue(Pair(true,playlist.playlistName))
+            }
+        }
     }
 }

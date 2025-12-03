@@ -1,4 +1,4 @@
-package com.example.playlistmaker.player.ui
+package com.example.playlistmaker.library.ui
 
 import android.view.View
 import android.widget.ImageView
@@ -9,17 +9,21 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.playlists.domain.Playlist
 import com.example.playlistmaker.utils.TextFormatter
 
-class PlaylistPlayerViewHolder(view: View): RecyclerView.ViewHolder(view) {
-    private val playlistName: TextView = itemView.findViewById(R.id.playlist_player_name)
-    private val tracksCount: TextView = itemView.findViewById(R.id.playlist_player_count)
-    private val playlistCover: ImageView = itemView.findViewById(R.id.playlist_player_cover)
+class PlaylistLibraryViewHolder(view: View): RecyclerView.ViewHolder(view) {
+
+
+    private val playlistName: TextView = itemView.findViewById(R.id.view_playlist_name)
+    private val tracksCount: TextView = itemView.findViewById(R.id.view_tracks_in_playlist)
+    private val playlistCover: ImageView = itemView.findViewById(R.id.view_playlist_cover)
 
     fun bind(playlist: Playlist){
         playlistName.text = playlist.playlistName
         tracksCount.text = TextFormatter.tracksCountFormat(playlist.tracksCount)
+
         Glide.with(itemView)
             .load(playlist.playlistCoverPath)
-            .placeholder(R.drawable.cover_mockup)
+            .placeholder(R.drawable.playlist_library_cover_placeholder)
             .into(playlistCover)
     }
+
 }

@@ -292,6 +292,6 @@
             android:layout_height="match_parent"
             android:layout_marginTop="@dimen/corner_radius_16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/playlist_inplayer_view" />
+            tools:listitem="@layout/item_playlist_selection" />
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

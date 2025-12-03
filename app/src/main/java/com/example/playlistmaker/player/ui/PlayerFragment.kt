@@ -139,14 +139,14 @@ class PlayerFragment : Fragment() {
             if (isSuccessful) {
                 Toast.makeText(
                     requireContext(),
-                    "Трек добавлен в плейлист \"$playlistName\"",
+                    getString(R.string.add_in_playlist, playlistName),
                     Toast.LENGTH_LONG
                 ).show()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Трек уже есть в плейлисте",
+                    getString(R.string.already_in_playlist),
                     Toast.LENGTH_LONG
                 ).show()
             }

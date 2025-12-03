@@ -91,7 +91,7 @@ open class PlaylistCreateFragment : Fragment() {
     open fun showSuccessToast(playlistName:String){
         Toast.makeText(
             requireContext(),
-            "Плейлист $playlistName создан",
+            getString(R.string.playlist_create, playlistName),
             Toast.LENGTH_LONG
         ).show()
         parentFragmentManager.popBackStack()

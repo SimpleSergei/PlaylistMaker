@@ -65,11 +65,11 @@ class PlaylistDetailsFragment : Fragment() {
 
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
-                        binding.overlay.visibility = View.GONE
+                        binding.overlay.isVisible = false
                     }
 
                     else -> {
-                        binding.overlay.visibility = View.VISIBLE
+                        binding.overlay.isVisible = true
                     }
                 }
             }
@@ -106,7 +106,6 @@ class PlaylistDetailsFragment : Fragment() {
         binding.playlistShare.setOnClickListener { viewModel.sharePlaylist() }
         binding.textShare.setOnClickListener { viewModel.sharePlaylist() }
         binding.textDelete.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             showDeletePlaylistDialog()
         }
         binding.textEdit.setOnClickListener { findNavController().navigate(R.id.action_playlistDetailsFragment_to_playlistEditFragment,
@@ -139,15 +138,18 @@ class PlaylistDetailsFragment : Fragment() {
     }
 
     private fun showDeletePlaylistDialog() {
+        binding.overlayMenu.isVisible = true
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Удалить плейлист")
             .setMessage("Хотите удалить плейлист?")
             .setPositiveButton("Да") { dialog, _ ->
                 dialog.dismiss()
+                binding.overlayMenu.isVisible = false
                 viewModel.deletePlaylist()
             }
             .setNegativeButton("Нет") { dialog, _ ->
                 dialog.dismiss()
+                binding.overlayMenu.isVisible = false
             }
             .create()
             .show()
@@ -227,7 +229,7 @@ class PlaylistDetailsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.getPlaylistDetails()
-        binding.overlay.visibility = View.GONE
+        binding.overlay.isVisible = false
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 

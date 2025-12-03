@@ -1,9 +1,7 @@
 package com.example.playlistmaker
 
 import android.app.Application
-import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.os.LocaleListCompat
 import com.example.playlistmaker.di.dataModule
 import com.example.playlistmaker.di.domainModule
 import com.example.playlistmaker.di.viewModelModule
@@ -11,7 +9,6 @@ import com.example.playlistmaker.settings.domain.SettingsInteractor
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import java.util.Locale
 
 const val DARK_THEME_KEY = "dark_theme"
 const val PLAYLIST_MAKER_PREFERENCES = "playlist_maker_preferences"

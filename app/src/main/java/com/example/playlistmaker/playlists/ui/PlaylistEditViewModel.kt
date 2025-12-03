@@ -9,6 +9,7 @@ import com.example.playlistmaker.playlists.domain.Playlist
 import com.example.playlistmaker.playlists.domain.PlaylistData
 import com.example.playlistmaker.playlists.domain.PlaylistInteractor
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 class PlaylistEditViewModel(
     private val playlistId: Long,
@@ -31,7 +32,7 @@ class PlaylistEditViewModel(
                 name = playlist.playlistName,
                 description = playlist.playlistDescription,
                 imageUri = if (playlist.playlistCoverPath.isNotEmpty()) {
-                    Uri.parse(playlist.playlistCoverPath)
+                    playlist.playlistCoverPath.toUri()
                 } else {
                     null
                 }

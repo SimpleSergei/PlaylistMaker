@@ -251,5 +251,12 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
+    <View
+        android:id="@+id/overlay_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:visibility="gone" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

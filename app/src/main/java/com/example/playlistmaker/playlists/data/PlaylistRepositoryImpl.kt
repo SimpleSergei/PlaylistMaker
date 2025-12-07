@@ -71,7 +71,7 @@ class PlaylistRepositoryImpl(
         val gson = Gson()
         val type = object : TypeToken<List<String>>() {}.type
         val currentTrackIds = gson.fromJson<List<String>>(p.tracksId, type) ?: emptyList()
-        val updatedTrackIds = currentTrackIds + t.trackId
+        val updatedTrackIds = listOf(t.trackId) + currentTrackIds
         val updatedTracksId = gson.toJson(updatedTrackIds)
         playlistDao.addTrackToPlaylist(p.playlistId, updatedTracksId)
     }
@@ -104,9 +104,13 @@ class PlaylistRepositoryImpl(
         } else {
             emptyList()
         }
+
         return if (trackIds.isNotEmpty()) {
             val trackEntities = playlistTrackDao.getTracksByIds(trackIds)
-            trackEntities.map { playlistTrackDbConverter.map(it) }
+            val trackMap = trackEntities.associateBy { it.trackId }
+            trackIds.mapNotNull { trackId ->
+                trackMap[trackId]?.let { playlistTrackDbConverter.map(it) }
+            }
         } else {
             emptyList()
         }

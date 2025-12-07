@@ -2,6 +2,7 @@ package com.example.playlistmaker.playlists.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -123,13 +124,23 @@ class PlaylistDetailsFragment : Fragment() {
 
     private fun renderState(state: PlaylistDetailsState) {
         when (state) {
-            is PlaylistDetailsState.Empty -> renderPlaylistInfo(state.playlist, 0, 0, emptyList())
-            is PlaylistDetailsState.Content -> renderPlaylistInfo(
-                state.playlist,
-                state.totalDuration,
-                state.playlist.tracksCount,
-                state.tracks
-            )
+            is PlaylistDetailsState.Empty -> {
+                renderPlaylistInfo(state.playlist, 0, 0, emptyList())
+                binding.noTrackText.isVisible = true
+                binding.noTracksImg.isVisible = true
+                binding.tracksRecyclerView.isVisible = false
+            }
+            is PlaylistDetailsState.Content -> {
+                renderPlaylistInfo(
+                    state.playlist,
+                    state.totalDuration,
+                    state.playlist.tracksCount,
+                    state.tracks
+                )
+                binding.noTrackText.isVisible = false
+                binding.noTracksImg.isVisible = false
+                binding.tracksRecyclerView.isVisible = true
+            }
 
             is PlaylistDetailsState.Deleted -> {
                 findNavController().popBackStack()
@@ -177,7 +188,7 @@ class PlaylistDetailsFragment : Fragment() {
         playlist: Playlist,
         totalDuration: Long,
         tracksCount: Int,
-        tracks: List<Track>
+        newTracks: List<Track>
     ) {
 
         binding.playlistName.text = playlist.playlistName
@@ -206,9 +217,9 @@ class PlaylistDetailsFragment : Fragment() {
         binding.playlistTime.text = TextFormatter.formatDurationMinutes(totalDuration)
         binding.playlistTracksCount.text = TextFormatter.tracksCountFormat(tracksCount)
 
-        if (tracks.isNotEmpty()) {
-            this.tracks.clear()
-            this.tracks.addAll(tracks)
+        if (newTracks.isNotEmpty()) {
+            tracks.clear()
+            tracks.addAll(newTracks)
             tracksAdapter.notifyDataSetChanged()
         }
     }

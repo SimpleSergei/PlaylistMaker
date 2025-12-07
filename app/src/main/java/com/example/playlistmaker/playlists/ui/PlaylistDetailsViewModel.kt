@@ -86,8 +86,24 @@ class PlaylistDetailsViewModel(
     fun deleteTrackFromPlaylist(track: Track) {
         viewModelScope.launch {
             playlistInteractor.deleteTrackById(playlistId, track.trackId)
-            getPlaylistDetails()
             playlistInteractor.deleteTrackFromDBById(track.trackId)
+
+            val playlist = playlistInteractor.getPlaylistById(playlistId)
+            val tracks = playlistInteractor.getTracksByIds(playlistId)
+            val totalDuration = tracks.sumOf { it.trackTimeMillis }
+
+            if (tracks.isEmpty()) {
+                _playlistDetailsState.value = PlaylistDetailsState.Empty(
+                    playlist = playlist,
+                    totalDuration = totalDuration
+                )
+            } else {
+                _playlistDetailsState.value = PlaylistDetailsState.Content(
+                    playlist = playlist,
+                    tracks = tracks,
+                    totalDuration = totalDuration
+                )
+            }
         }
     }
 

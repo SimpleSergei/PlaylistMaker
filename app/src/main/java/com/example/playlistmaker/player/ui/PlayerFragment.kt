@@ -15,7 +15,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.databinding.FragmentPlayerBinding
-import com.example.playlistmaker.library.domain.Playlist
+import com.example.playlistmaker.playlists.domain.Playlist
 import com.example.playlistmaker.player.domain.PlayerState
 import com.example.playlistmaker.search.domain.Track
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -139,14 +139,14 @@ class PlayerFragment : Fragment() {
             if (isSuccessful) {
                 Toast.makeText(
                     requireContext(),
-                    "Трек добавлен в плейлист \"$playlistName\"",
+                    getString(R.string.add_in_playlist, playlistName),
                     Toast.LENGTH_LONG
                 ).show()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
             } else {
                 Toast.makeText(
                     requireContext(),
-                    "Трек уже есть в плейлисте",
+                    getString(R.string.already_in_playlist),
                     Toast.LENGTH_LONG
                 ).show()
             }

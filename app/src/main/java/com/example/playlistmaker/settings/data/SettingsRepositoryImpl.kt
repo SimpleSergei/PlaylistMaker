@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.example.playlistmaker.DARK_THEME_KEY
 import com.example.playlistmaker.PLAYLIST_MAKER_PREFERENCES
 import com.example.playlistmaker.settings.domain.SettingsRepository
+import androidx.core.content.edit
 
 class SettingsRepositoryImpl(context: Context) : SettingsRepository {
     val sharedPrefs = context.getSharedPreferences(PLAYLIST_MAKER_PREFERENCES, Context.MODE_PRIVATE)
@@ -21,7 +22,7 @@ class SettingsRepositoryImpl(context: Context) : SettingsRepository {
         } else {
             AppCompatDelegate.MODE_NIGHT_NO
         }
-        sharedPrefs.edit().putBoolean(DARK_THEME_KEY, newDarkThemeState).apply()
+        sharedPrefs.edit { putBoolean(DARK_THEME_KEY, newDarkThemeState) }
         AppCompatDelegate.setDefaultNightMode(newMode)
     }
 }

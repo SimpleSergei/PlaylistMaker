@@ -9,7 +9,7 @@ class PagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) : Fra
     override fun createFragment(position: Int): Fragment {
         return when (position){
             0 -> FavTracksFragment.newInstance()
-            else -> PlaylistsFragment.newInstance()
+            else -> PlaylistsLibraryFragment.newInstance()
         }
     }
 

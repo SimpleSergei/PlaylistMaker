@@ -11,5 +11,15 @@ class TextFormatter {
                 else -> "$count треков"
             }
         }
+
+        fun formatDurationMinutes(millis: Long): String {
+            val totalMinutes = millis / 60000
+            return when {
+                totalMinutes == 0L -> "0 минут"
+                totalMinutes % 10 == 1L && totalMinutes % 100 != 11L -> "$totalMinutes минута"
+                totalMinutes % 10 in 2..4 && totalMinutes % 100 !in 12..14 -> "$totalMinutes минуты"
+                else -> "$totalMinutes минут"
+            }
+        }
     }
 }

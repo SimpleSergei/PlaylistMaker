@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.library.domain.Playlist
+import com.example.playlistmaker.playlists.domain.Playlist
 
 
 class PlaylistPlayerAdapter(private val playlists: List<Playlist>) :
@@ -16,7 +16,7 @@ class PlaylistPlayerAdapter(private val playlists: List<Playlist>) :
     ): PlaylistPlayerViewHolder {
         val view =
             LayoutInflater.from(parent.context)
-                .inflate(R.layout.playlist_inplayer_view, parent, false)
+                .inflate(R.layout.item_playlist_selection, parent, false)
         return PlaylistPlayerViewHolder(view)
     }
 

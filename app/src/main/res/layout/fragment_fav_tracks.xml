@@ -40,5 +40,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/track_view" />
+        tools:listitem="@layout/item_track" />
 </androidx.constraintlayout.widget.ConstraintLayout>

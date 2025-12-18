@@ -1,9 +1,11 @@
 package com.example.playlistmaker.di
 
 import com.example.playlistmaker.library.ui.FavTracksViewModel
-import com.example.playlistmaker.library.ui.PlaylistCreateViewModel
-import com.example.playlistmaker.library.ui.PlaylistsViewModel
+import com.example.playlistmaker.library.ui.PlaylistsLibraryViewModel
 import com.example.playlistmaker.player.ui.PlayerViewModel
+import com.example.playlistmaker.playlists.ui.PlaylistCreateViewModel
+import com.example.playlistmaker.playlists.ui.PlaylistDetailsViewModel
+import com.example.playlistmaker.playlists.ui.PlaylistEditViewModel
 import com.example.playlistmaker.search.domain.Track
 import com.example.playlistmaker.search.ui.TracksSearchViewModel
 import com.example.playlistmaker.settings.ui.SettingsViewModel
@@ -23,10 +25,16 @@ val viewModelModule = module {
     viewModel<FavTracksViewModel> {
         FavTracksViewModel(get())
     }
-    viewModel<PlaylistsViewModel> {
-        PlaylistsViewModel(get())
+    viewModel<PlaylistsLibraryViewModel> {
+        PlaylistsLibraryViewModel(get())
     }
     viewModel<PlaylistCreateViewModel>{
         PlaylistCreateViewModel(get())
+    }
+    viewModel<PlaylistDetailsViewModel> { (playlistId: Long) ->
+        PlaylistDetailsViewModel(playlistId, get())
+    }
+    viewModel<PlaylistEditViewModel> { (playlistId: Long) ->
+        PlaylistEditViewModel(playlistId,get())
     }
 }

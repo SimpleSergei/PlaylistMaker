@@ -13,5 +13,6 @@
 - **Fragments** — модульные компоненты UI
 
 ## Скриншоты
-
-*(Здесь будут скриншоты)*
+| Экран поиска | Избранные треки / плейлисты | Проигрыватель |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/865eaab9-a8f7-4aea-9693-25251dbc524c" width="200"> | <img src="https://github.com/user-attachments/assets/c62d6a66-2d1e-4dde-9382-1c3871326016" width="200"> | <img src="https://github.com/user-attachments/assets/454bd8c3-f731-41d4-a6ce-b53035bfdbfc" width="200"> |
